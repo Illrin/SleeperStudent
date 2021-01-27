@@ -1,15 +1,30 @@
 package com.example.sleeperstudent;
 
+import android.app.DatePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Period;
+import java.util.Calendar;
+import java.util.Date;
+
 public class SecondFragment extends Fragment {
+    Button btSave;
+    EditText etHeight, etWeight, etAge, etName;
+    DatePickerDialog.OnDateSetListener dateSetListener;
 
     @Override
     public View onCreateView(
@@ -22,7 +37,38 @@ public class SecondFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        btSave = view.findViewById(R.id.bt_save);
+        etHeight = view.findViewById(R.id.et_height);
+        etWeight = view.findViewById(R.id.et_weight);
+        etAge = view.findViewById(R.id.et_age);
+        etName = view.findViewById(R.id.et_name);
 
+        User user = new User();
+        user.inputData(this.getContext());
+        etHeight.setText(String.valueOf(user.getHeight()));
+        etWeight.setText(String.valueOf(user.getWeight()));
+        etAge.setText(String.valueOf(user.getAge()));
+        etName.setText(user.getUserName());
+
+        //Save Changes
+        btSave.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                int height = Integer.parseInt(etHeight.getText().toString());
+                int weight = Integer.parseInt(etWeight.getText().toString());
+                int age = Integer.parseInt(etAge.getText().toString());
+                String name = etName.getText().toString();
+
+                user.setHeight(height);
+                user.setWeight(weight);
+                user.setAge(age);
+                user.setUserName(name);
+                user.writeToFile(view.getContext());
+            }
+        });
+
+
+        //Move to initial screen
         view.findViewById(R.id.button_second).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

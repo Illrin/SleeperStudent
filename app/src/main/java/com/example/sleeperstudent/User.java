@@ -20,8 +20,15 @@ public class User
     //add more fields down here
     private String userName;
     private int age;
+    private int weight;//in pounds
+    private int height;//in inches
 
-
+    public User(){
+        age = 25;
+        userName = "Bob";
+        weight = 165;
+        height = 67;
+    }
 
     //Setters
     public void setUserName(String userName)
@@ -32,6 +39,8 @@ public class User
     {
         this.age = age;
     }
+    public void setWeight(int weight){ this.weight = weight; }
+    public void setHeight(int height){ this.height = height; }
 
     //Getters
     public String getUserName()
@@ -42,11 +51,13 @@ public class User
     {
         return age;
     }
+    public int getWeight() { return weight; }
+    public int getHeight() { return height; }
 
 
     /*************************************************************************************
      *        Function: writeToFile
-     *       Variables: Context: Application contectual info.
+     *       Variables: Context: Application contextual info.
      *  Post Condition: Writes user data to the system.
      *            Note: To pass context to this function, pass the "this" keyword. If you are
      *                  accessing this object in a listener function, pass view.getContext();
@@ -67,9 +78,13 @@ public class User
             out = new FileOutputStream(txtFile);
             String printName = "Name: " + DATA_SEPERATOR + userName + "\n";
             String printAge = "Age: " + DATA_SEPERATOR + Integer.toString(age) + "\n";
+            String printHeight = "Height: " + DATA_SEPERATOR + Integer.toString(height) + "\n";
+            String printWeight = "Weight: " + DATA_SEPERATOR + Integer.toString(weight) + "\n";
 
             out.write(printName.getBytes());
             out.write(printAge.getBytes());
+            out.write(printHeight.getBytes());
+            out.write(printWeight.getBytes());
 
             out.flush();
         }
@@ -96,7 +111,7 @@ public class User
 
     /*************************************************************************************
      *        Function: InputData
-     *       Variables: Context: Application contectual info.
+     *       Variables: Context: Application contextual info.
      *  Post Condition: Reads data from file to the object
      *            Note: To pass context to this function, pass the "this" keyword.
      ************************************************************************************/
@@ -122,6 +137,12 @@ public class User
                         break;
                     case "Age: ":
                         age = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Height: ":
+                        height = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Weight: ":
+                        weight = Integer.parseInt(parseInput[1]);
                         break;
                 }
 

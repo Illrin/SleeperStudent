@@ -8,5 +8,16 @@
     <string name="previous">Previous</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <!-- Strings used physical info fragment -->
+    <string name="hello_second_fragment">Personal Information</string>
+    <string name="birth_date">Age</string>
+    <string name="height">Height (Inches)</string>
+    <string name="weight">Weight (Pounds)</string>
+    <string name="saved">Save Changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="name">Name</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

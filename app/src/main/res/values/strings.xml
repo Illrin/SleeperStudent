@@ -4,12 +4,12 @@
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="profile">Profile</string>
+    <string name="sleep_times">Sleep Times</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
 
-    <!-- Strings used physical info fragment -->
+    <!-- Strings used in physical info fragment -->
     <string name="hello_second_fragment">Personal Information</string>
     <string name="birth_date">Age</string>
     <string name="height">Height (Inches)</string>
@@ -17,7 +17,8 @@
     <string name="saved">Save Changes</string>
     <string name="cancel">Cancel</string>
     <string name="name">Name</string>
+
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="back">Back</string>
 
 </resources>

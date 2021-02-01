@@ -22,12 +22,16 @@ public class User
     private int age;
     private int weight;//in pounds
     private int height;//in inches
-
+    private int[] wakeups;
     public User(){
         age = 25;
         userName = "Bob";
         weight = 165;
         height = 67;
+        wakeups = new int[7];
+        for(int i = 0; i < 7; i++){
+            wakeups[i] = 1;
+        }
     }
 
     //Setters
@@ -41,6 +45,7 @@ public class User
     }
     public void setWeight(int weight){ this.weight = weight; }
     public void setHeight(int height){ this.height = height; }
+    public void setWakeups(int wakeup, int weekday){ this.wakeups[weekday] = wakeup; }
 
     //Getters
     public String getUserName()
@@ -53,6 +58,7 @@ public class User
     }
     public int getWeight() { return weight; }
     public int getHeight() { return height; }
+    public int getWakeup(int weekday) { return wakeups[weekday]; }//doesn't check for oob
 
 
     /*************************************************************************************
@@ -80,11 +86,19 @@ public class User
             String printAge = "Age: " + DATA_SEPERATOR + Integer.toString(age) + "\n";
             String printHeight = "Height: " + DATA_SEPERATOR + Integer.toString(height) + "\n";
             String printWeight = "Weight: " + DATA_SEPERATOR + Integer.toString(weight) + "\n";
+            String[] printWakeup = {"Sunday: ", "Monday: ", "Tuesday: ", "Wednesday: ", "Thursday: ",
+                    "Friday: ", "Saturday: "};
+            for(int i = 0; i < 7; i++){
+                printWakeup[i] = printWakeup[i] + DATA_SEPERATOR + Integer.toString(wakeups[i]) + "\n";
+            }
 
             out.write(printName.getBytes());
             out.write(printAge.getBytes());
             out.write(printHeight.getBytes());
             out.write(printWeight.getBytes());
+            for(int i = 0; i < 7; i++){
+                out.write(printWakeup[i].getBytes());
+            }
 
             out.flush();
         }
@@ -143,6 +157,27 @@ public class User
                         break;
                     case "Weight: ":
                         weight = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Sunday: ":
+                        wakeups[0] = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Monday: ":
+                        wakeups[1] = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Tuesday: ":
+                        wakeups[2] = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Wednesday: ":
+                        wakeups[3] = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Thursday: ":
+                        wakeups[4] = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Friday: ":
+                        wakeups[5] = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Saturday: ":
+                        wakeups[6] = Integer.parseInt(parseInput[1]);
                         break;
                 }
 

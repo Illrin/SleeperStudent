@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_FirstFragment_to_sleepInput"
             app:destination="@id/sleepInput" />
+        <action
+            android:id="@+id/action_FirstFragment_to_wakeUp"
+            app:destination="@id/wakeUp" />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -35,6 +38,15 @@
         tools:layout="@layout/fragment_sleep_input" >
         <action
             android:id="@+id/action_sleepInput_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wakeUp"
+        android:name="com.example.sleeperstudent.WakeUp"
+        android:label="fragment_wakeup"
+        tools:layout="@layout/fragment_wakeup" >
+        <action
+            android:id="@+id/action_wakeUp_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
 </navigation>

@@ -38,5 +38,13 @@ public class FirstFragment extends Fragment {
                         .navigate(R.id.action_FirstFragment_to_sleepInput);
             }
         });
+
+        view.findViewById(R.id.bt_toWake).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(FirstFragment.this)
+                        .navigate(R.id.action_FirstFragment_to_wakeUp);
+            }
+        });
     }
 }

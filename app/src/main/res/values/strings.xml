@@ -7,7 +7,7 @@
     <string name="profile">Profile</string>
     <string name="sleep_times">Sleep Times</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_first_fragment">Welcome to Sleeper Student</string>
 
     <!-- Strings used in physical info fragment -->
     <string name="hello_second_fragment">Personal Information</string>
@@ -15,10 +15,12 @@
     <string name="height">Height (Inches)</string>
     <string name="weight">Weight (Pounds)</string>
     <string name="saved">Save Changes</string>
-    <string name="cancel">Cancel</string>
+    <string name="cancel">Back</string>
     <string name="name">Name</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="back">Back</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

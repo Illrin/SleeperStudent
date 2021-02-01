@@ -38,12 +38,11 @@ public class ScreenExposure
      *  Post Condition: Initializes calendars bedTime and wakeTime to the time given by
      *                  the other parameters
      ************************************************************************************/
-    private static void createCalendars(int startHour, int startMinute, int endHour, int endMinute, Calendar bedTime, Calendar wakeTime)
-    {
+    private static void createCalendars(int startHour, int startMinute, int endHour, int endMinute, Calendar bedTime, Calendar wakeTime) {
         bedTime.set(Calendar.SECOND, 0);
         wakeTime.set(Calendar.SECOND, 0);
 
-        if(startHour > endHour)
+        if (startHour > endHour)
             bedTime.add(Calendar.DATE, -1);
 
         bedTime.set(Calendar.HOUR_OF_DAY, startHour);
@@ -63,26 +62,23 @@ public class ScreenExposure
      *                  the hour before bedtime.
      ************************************************************************************/
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public static boolean isUsingPhoneHourBefore(int startHour, int startMinute, int endHour, int endMinute, Context context)
-    {
+    public static boolean isUsingPhoneHourBefore(int startHour, int startMinute, int endHour, int endMinute, Context context) {
         Calendar bedTime = Calendar.getInstance();
         Calendar wakeTime = Calendar.getInstance();
         createCalendars(startHour, startMinute, endHour, endMinute, bedTime, wakeTime);
 
         UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-        UsageEvents tester =  usageStatsManager.queryEvents(bedTime.getTimeInMillis(), wakeTime.getTimeInMillis());
+        UsageEvents tester = usageStatsManager.queryEvents(bedTime.getTimeInMillis(), wakeTime.getTimeInMillis());
 
         UsageEvents.Event evento = new UsageEvents.Event();
 
         boolean stop = tester.hasNextEvent();
-        while(stop)
-        {
+        while (stop) {
             tester.getNextEvent(evento);
             stop = tester.hasNextEvent();
-            if(evento.getEventType() == UsageEvents.Event.SCREEN_INTERACTIVE)
-            {
-                double timeDiff = ((bedTime.getTimeInMillis() - evento.getTimeStamp())/1000. )/60.;
-                if(timeDiff <= 60.)
+            if (evento.getEventType() == UsageEvents.Event.SCREEN_INTERACTIVE) {
+                double timeDiff = ((bedTime.getTimeInMillis() - evento.getTimeStamp()) / 1000.) / 60.;
+                if (timeDiff <= 60.)
                     return true;
             }
         }
@@ -92,9 +88,10 @@ public class ScreenExposure
     }
 
 
-            /* TO DOS */
+    /* TO DOS */
     // also need to calculate NEW YEARS
     // check if it handles 23:59
+
     /*************************************************************************************
      *        Function: calculateScreenTime
      *       Variables: Context: Application contextual info
@@ -105,14 +102,13 @@ public class ScreenExposure
      *
      ************************************************************************************/
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public static double calculateScreenTime(int startHour, int startMinute, int endHour, int endMinute, Context context)
-    {
+    public static double calculateScreenTime(int startHour, int startMinute, int endHour, int endMinute, Context context) {
         Calendar bedTime = Calendar.getInstance();
         Calendar wakeTime = Calendar.getInstance();
         createCalendars(startHour, startMinute, endHour, endMinute, bedTime, wakeTime);
 
         UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-        UsageEvents tester =  usageStatsManager.queryEvents(bedTime.getTimeInMillis(), wakeTime.getTimeInMillis());
+        UsageEvents tester = usageStatsManager.queryEvents(bedTime.getTimeInMillis(), wakeTime.getTimeInMillis());
 
 
         UsageEvents.Event evento = new UsageEvents.Event();
@@ -120,12 +116,10 @@ public class ScreenExposure
         double totalTime = 0;
 
         boolean stop = tester.hasNextEvent();
-        while(stop)
-        {
+        while (stop) {
             tester.getNextEvent(evento);
             stop = tester.hasNextEvent();
-            switch(evento.getEventType())
-            {
+            switch (evento.getEventType()) {
                 case UsageEvents.Event.SCREEN_INTERACTIVE:
                     timeStart = evento.getTimeStamp();
                     System.out.println("interaction event @ " + evento.getTimeStamp());
@@ -136,12 +130,14 @@ public class ScreenExposure
                     break;
                 case UsageEvents.Event.SCREEN_NON_INTERACTIVE:
                 case UsageEvents.Event.DEVICE_SHUTDOWN:
-                    if(timeStart == 0)
+                    if (timeStart == 0)
                         continue;
-                    totalTime+= ((evento.getTimeStamp() - timeStart)/1000.)/60.;
+                    totalTime += ((evento.getTimeStamp() - timeStart) / 1000.) / 60.;
                     break;
             }
         }
         return totalTime;
-
+    }
 }
+
+

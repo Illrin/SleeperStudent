@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import org.joda.time.Period;
@@ -34,10 +33,16 @@ import java.util.Date;
  * create an instance of this fragment.
  */
 public class SleepInput extends Fragment {
+    //Date/time pickers
     Button btStartDate, btEndDate, btSubmit, btStartTime, btEndTime;
+
+    //Date dialogue
     DatePickerDialog.OnDateSetListener dateSetListener1, dateSetListener2;
+
+    //Time Storage
     int startHour, startMinute, endHour, endMinute;
 
+    //Quality parameters
     SeekBar sbMood, sbQuality, sbStress;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +52,7 @@ public class SleepInput extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        //Initialize widgets
         btStartDate = view.findViewById(R.id.bt_startDate);
         btEndDate = view.findViewById(R.id.bt_endDate);
         btSubmit = view.findViewById(R.id.bt_submit);
@@ -70,7 +75,7 @@ public class SleepInput extends Fragment {
         btStartDate.setText(date);
 
         //Set Listeners
-        btStartDate.setOnClickListener(new View.OnClickListener(){
+        btStartDate.setOnClickListener(new View.OnClickListener(){//Create date dialogue (start)
             @Override
             public void onClick(View view){
                 DatePickerDialog datePickerDialog = new DatePickerDialog(
@@ -81,7 +86,7 @@ public class SleepInput extends Fragment {
                 datePickerDialog.show();
             }
         });
-        dateSetListener1 = new DatePickerDialog.OnDateSetListener() {
+        dateSetListener1 = new DatePickerDialog.OnDateSetListener() {//Set button text
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month = month + 1;
@@ -90,7 +95,7 @@ public class SleepInput extends Fragment {
             }
         };
 
-        btEndDate.setOnClickListener(new View.OnClickListener(){
+        btEndDate.setOnClickListener(new View.OnClickListener(){//Create date dialogue (end)
             @Override
             public void onClick(View view){
                 DatePickerDialog datePickerDialog = new DatePickerDialog(
@@ -102,7 +107,7 @@ public class SleepInput extends Fragment {
             }
         });
 
-        dateSetListener2 = new DatePickerDialog.OnDateSetListener() {
+        dateSetListener2 = new DatePickerDialog.OnDateSetListener() {//Set button text (end)
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month = month + 1;
@@ -111,7 +116,7 @@ public class SleepInput extends Fragment {
             }
         };
 
-        btStartTime.setOnClickListener(new View.OnClickListener(){
+        btStartTime.setOnClickListener(new View.OnClickListener(){//Start time dialogue
             @Override
             public void onClick(View v){
                 TimePickerDialog timePickerDialog = new TimePickerDialog(
@@ -131,7 +136,7 @@ public class SleepInput extends Fragment {
             }
         });
 
-        btEndTime.setOnClickListener(new View.OnClickListener(){
+        btEndTime.setOnClickListener(new View.OnClickListener(){//End time dialogue
             @Override
             public void onClick(View v){
                 TimePickerDialog timePickerDialog = new TimePickerDialog(
@@ -165,9 +170,7 @@ public class SleepInput extends Fragment {
                     long startDate = date1.getTime();
                     long endDate = date2.getTime();
                     if (startDate <= endDate) {
-                        Period period = new Period(startDate, endDate, PeriodType.yearMonthDay());
-                        int years = period.getYears();
-                        int months = period.getMonths();
+                        Period period = new Period(startDate, endDate, PeriodType.days());
                         int days = period.getDays();
                         if(startHour > endHour){
                             days--;

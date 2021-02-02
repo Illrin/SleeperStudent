@@ -38,26 +38,35 @@ public class WakeUp extends Fragment {
 
     }
 
+    //Change text/state of widgets based on current day and saved data
+    public void setupWidgets(@NonNull View view){
+        //new user, get data
+        User initial = new User();
+        initial.inputData(view.getContext());
+        int wakeup = initial.getWakeup(weekday);
+        //get switch status, wakeup time
+        int ignored = Integer.signum(wakeup);
+        wakeup = Math.abs(wakeup) - 1;
+        //setup text to output
+        int minute = wakeup % 60;
+        int hour = wakeup / 60;
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(0,0,0, hour, minute);
+        //set widgets
+        btWake.setText(DateFormat.format("hh:mm aa", calendar));
+        swIgnore.setChecked(ignored == -1);
+    }
+
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //Initialize widgets
         btWake = view.findViewById(R.id.bt_wakeup);
         sbWeekday = view.findViewById(R.id.sb_weekday);
         tvWeekday = view.findViewById(R.id.tv_weekday);
         swIgnore = view.findViewById(R.id.sw_ignore);
 
-        //inital text/switch set
-        User inital = new User();
-        inital.inputData(view.getContext());
-        int wakeup = inital.getWakeup(weekday);
-        int ignored = Integer.signum(wakeup);
-        wakeup = Math.abs(wakeup) - 1;
-        int minute = wakeup % 60;
-        int hour = wakeup / 60;
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(0,0,0, hour, minute);
-        btWake.setText(DateFormat.format("hh:mm aa", calendar));
-        swIgnore.setChecked(ignored == -1);
+        setupWidgets(view);
 
         btWake.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -93,21 +102,7 @@ public class WakeUp extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 weekday = progress;
                 tvWeekday.setText(weekdayNames[weekday]);
-                //get user info
-                User user = new User();
-                user.inputData(view.getContext());
-                int wakeup = user.getWakeup(weekday);
-                int ignored = Integer.signum(wakeup);
-                wakeup = Math.abs(wakeup) - 1;
-
-                //set text to day's values
-                int minute = wakeup % 60;
-                int hour = wakeup / 60;
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(0,0,0, hour, minute);
-                btWake.setText(DateFormat.format("hh:mm aa", calendar));
-
-                swIgnore.setChecked(ignored == -1);
+                setupWidgets(view);
             }
 
             @Override

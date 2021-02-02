@@ -25,7 +25,7 @@
         <SeekBar
             android:id="@+id/sb_weekday"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:max="6"
@@ -55,11 +55,11 @@
 
         <Switch
             android:id="@+id/sw_ignore"
-            android:layout_width="130dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:checked="true"
-            android:text="Ignore"
+            android:text="Skip"
             android:textColor="#FFFFFF"
             android:textSize="24sp" />
 

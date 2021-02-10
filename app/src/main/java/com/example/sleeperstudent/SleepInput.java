@@ -188,7 +188,8 @@ public class SleepInput extends Fragment {
                     int quality = sbQuality.getProgress();
                     int stress = sbQuality.getProgress();
 
-                    //TODO put into database
+                    //TODO put into database - startDate, endDate, startHour, endHour,
+                    //TODO startMinute, endMinute, sleepTime, mood, quality, stress
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

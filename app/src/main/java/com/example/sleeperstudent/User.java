@@ -24,10 +24,10 @@ public class User
     private int height;//in inches
     private int[] wakeups;
     public User(){
-        age = 25;
-        userName = "Bob";
-        weight = 165;
-        height = 67;
+        age = -1;
+        userName = "";
+        weight = -1;
+        height = -1;
         wakeups = new int[7];
         for(int i = 0; i < 7; i++){
             wakeups[i] = 1;
@@ -193,6 +193,44 @@ public class User
 
     }
 
+    /*************************************************************************************
+     *        Function: BuildQuery
+     *  Post Condition: Returns a vector that can be compared to Tip tag vectors
+     ************************************************************************************/
+    public Integer[] buildQuery(){
+        //stub for now
+        Integer[] query = {0,0,0,0,0,0,0,1};
+        if(age > 21) query[3] = 1;
+        /*  Get current time/day
+        *   Get all sleep periods within the last 72 hours
+        *       just gonna say it's an arraylist of objects for now, sleepPeriods
+        *   Sleep Breaks
+        *       for all except last period,
+        *           check if distance between current period end and next period start are < 1 hour apart
+        *               increment query[0] every time
+        *   Screen Time
+        *       for all periods,
+        *           call ScreenExposure's calculateScreenTime from 30min before startTime to startTime
+        *           sum up
+        *           query[1] = sum / 15? maybe like 20 or 30
+        *   Extreme Lack
+        *       sum up total sleep time, divide by 3 for average
+        *       if < default recc sleeping time / 2? 3? 4?, set query[2] to 5
+        *   Long Naps
+        *       for all periods,
+        *           check if sleep amount is > 30 min and < 2 hrs? 3 hrs?
+        *           increment query[4] for each one
+        *   Sleep Schedule
+        *       for all periods except first and last
+        *           skip if nap (see above)
+        *           if diff in sleep amount between neighbors > 1 hour, increment query[5]
+        *   Stress
+        *       get average stress, increment query[6] if > 6
+        *       for all periods, increment query[6] if stress >= 8
+        *
+        * */
+        return query;
+    }
 
 
 

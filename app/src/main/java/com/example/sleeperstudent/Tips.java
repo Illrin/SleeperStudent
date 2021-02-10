@@ -152,6 +152,7 @@ public class Tips
             {
                 currItem = it.next();
                 toRec.add(allTips.get(currItem.tipNum));
+                ++counter;
             }
             return toRec;
         }

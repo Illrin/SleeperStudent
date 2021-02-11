@@ -73,12 +73,14 @@ public class ScreenExposure
         UsageEvents.Event evento = new UsageEvents.Event();
 
         boolean stop = tester.hasNextEvent();
-        while (stop) {
+        while (stop)
+        {
             tester.getNextEvent(evento);
             stop = tester.hasNextEvent();
-            if (evento.getEventType() == UsageEvents.Event.SCREEN_INTERACTIVE) {
+            if (evento.getEventType() == UsageEvents.Event.SCREEN_INTERACTIVE)
+            {
                 double timeDiff = ((bedTime.getTimeInMillis() - evento.getTimeStamp()) / 1000.) / 60.;
-                if (timeDiff <= 60.)
+                if (timeDiff <= 30.)
                     return true;
             }
         }

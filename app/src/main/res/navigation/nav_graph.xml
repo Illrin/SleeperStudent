@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/intro">
 
     <fragment
         android:id="@+id/FirstFragment"
@@ -48,5 +48,17 @@
         <action
             android:id="@+id/action_wakeUp_to_FirstFragment"
             app:destination="@id/FirstFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/intro"
+        android:name="com.example.sleeperstudent.Intro"
+        android:label="fragment_intro"
+        tools:layout="@layout/fragment_intro" >
+        <action
+            android:id="@+id/action_intro_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_intro_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
     </fragment>
 </navigation>

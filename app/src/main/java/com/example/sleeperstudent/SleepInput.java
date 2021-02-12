@@ -24,8 +24,19 @@ import org.joda.time.PeriodType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Updates.*;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -183,10 +194,63 @@ public class SleepInput extends Fragment {
                         if(days >= 0) sleepTime += ((endHour - startHour) * 60)
                                 + (endMinute - startMinute) + (days * 24 * 60);
                     }
-                    //sleep quality
+                    //setting up DB connection
+                    MongoClient client = new MongoClient(new MongoClientURI("mongodb+srv://andretl2:amiKa2mNXQCZcf2I@sleeperstudent.oczuf.mongodb.net/<dbname>?retryWrites=true&w=majority"));
+                    MongoDatabase database= client.getDatabase("sleeperstudent");
+                    MongoCollection<Document> data =database.getCollection("data");
+                    //getting the username
+                    User user1=new User();
+                    user1.inputData(view.getContext());
+                    String uid=user1.getUserName();
+                    //creating DB entry
+                    List<Integer> mlist=new ArrayList<>();
+                    List<Integer> qlist=new ArrayList<>();
+                    List<Integer> slist=new ArrayList<>();
+                    List<Date> sdatelist=new ArrayList<>();
+                    List<Date> edatelist=new ArrayList<>();
+                    Document oldDbUser=data.find(eq("_id",uid)).first();
+                    if(oldDbUser==null) {
+                        Document newDbUser = new Document("_id", uid);
+                        newDbUser.append("startdate",sdatelist).append("enddate",edatelist).append("mood",mlist).append("quality",qlist).append("stress",slist);
+                        data.insertOne(newDbUser);
+                    }
+                    oldDbUser=data.find(eq("_id",uid)).first();
+
+
+                    sdatelist=(List<Date>)oldDbUser.get("startdate");
+                    edatelist=(List<Date>)oldDbUser.get("enddate");
+                    mlist=(List<Integer>)oldDbUser.get("mood");
+                    qlist=(List<Integer>)oldDbUser.get("quality");
+                    slist=(List<Integer>)oldDbUser.get("stress");
+
                     int mood = sbMood.getProgress();
                     int quality = sbQuality.getProgress();
                     int stress = sbQuality.getProgress();
+                    Bson filter=eq("_id",uid);
+                    Bson updateop;
+                    //update startdate
+                    sdatelist.add(date1);
+                    updateop=set("startdate",sdatelist);
+                    data.updateOne(filter,updateop);
+                    //update enddate
+                    edatelist.add(date2);
+                    updateop=set("enddate",edatelist);
+                    data.updateOne(filter,updateop);
+                    //update mood
+                    mlist.add(mood);
+                    updateop=set("mood",mlist);
+                    data.updateOne(filter,updateop);
+                    //update quality
+                    qlist.add(quality);
+                    updateop=set("quality",qlist);
+                    data.updateOne(filter,updateop);
+                    //update stress
+                    slist.add(stress);
+                    updateop=set("stress",slist);
+                    data.updateOne(filter,updateop);
+
+
+
 
                     //TODO put into database - startDate, endDate, startHour, endHour,
                     //TODO startMinute, endMinute, sleepTime, mood, quality, stress

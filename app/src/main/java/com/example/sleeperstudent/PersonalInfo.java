@@ -42,7 +42,7 @@ public class PersonalInfo extends Fragment {
         etHeight.setText(String.valueOf(user.getHeight()));
         etWeight.setText(String.valueOf(user.getWeight()));
         etAge.setText(String.valueOf(user.getAge()));
-        etName.setText(user.getUserName());
+        etName.setText(user.getRealName());
 
         //Save Changes
         btSave.setOnClickListener(new View.OnClickListener(){
@@ -56,7 +56,7 @@ public class PersonalInfo extends Fragment {
                 user.setHeight(height);
                 user.setWeight(weight);
                 user.setAge(age);
-                user.setUserName(name);
+                user.setRealName(name);
                 user.writeToFile(view.getContext());
             }
         });

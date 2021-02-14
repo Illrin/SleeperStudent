@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class FirstFragment extends Fragment {
     TextView tvTips, tvSleep, tvStart, tvIntro;
@@ -25,71 +27,72 @@ public class FirstFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_first, container, false);
     }
 
-
-    /*************************************************************************************
-     *        Function: checkValidity
-     *  Post Condition: Determines if current saved data is enough for a query, returns
-     *                  True if enough, False otherwise.
-     ************************************************************************************/
-    public boolean checkValidity(){
-        User user = new User();
-        user.inputData(getActivity());
-        //im not too sure if height/weight actually impacts sleep, but ill have them
-        //invalidate for now
-        if(user.getUserName().equals("") || user.getAge() == -1
-                || user.getHeight() == -1 || user.getWeight() == -1) return false;
-        //check for at least 1 database entry in sleep
-        return true;
-    }
-
     /*************************************************************************************
      *        Function: displayResults
      *       Variables: tips: ArrayList of Strings, coming from Tips.topTenRecs()
      *                  sleepAmount: total amount of sleep recommended
      *                  startTime: String representing recommended bedtime, "" if there is none
+     *                  type: What kind of display the app should be using
+     *                      0: standard, display startTime and sleepAmount
+     *                      1: no wakeup time, just use sleepAmount
+     *                      2: nap rec, mention that (implement later)
+     *                      3: issue due to lack of data
      *  Post Condition: Sets first fragment's TextViews to properly display the determined
      *                  sleep time and tips.
      ************************************************************************************/
-    public void displayResults(ArrayList<String> tips, int sleepAmount, String startTime){
+    public void displayResults(ArrayList<String> tips, int sleepAmount, String startTime, int type){
         StringBuilder fullTips = new StringBuilder("Sleep Improvement Tips:\n");
         for(int i = 0; i < tips.size(); i++) {
             fullTips.append(i).append(". ").append(tips.get(i)).append("\n");
         }
         tvTips.setText(fullTips.toString());
-        if(startTime.equals("")){
-            ViewGroup.LayoutParams startParams = tvStart.getLayoutParams();
-            ViewGroup.LayoutParams sleepParams = tvSleep.getLayoutParams();
-            sleepParams.height += startParams.height;
-            startParams.height = 0;
-            tvStart.setLayoutParams(startParams);
-            tvSleep.setLayoutParams(sleepParams);
-            String rec = "You should get " + sleepAmount + " hours of sleep tonight";
-            tvSleep.setText(rec);
-        }
-        else {
-            ViewGroup.LayoutParams startParams = tvStart.getLayoutParams();
-            ViewGroup.LayoutParams sleepParams = tvSleep.getLayoutParams();
-            sleepParams.height -= 206;
-            startParams.height = 206;
-            tvStart.setLayoutParams(startParams);
-            tvSleep.setLayoutParams(sleepParams);
-            String rec = "Your recommended bedtime is " + startTime;
-            tvStart.setText(rec);
-            int minutes = sleepAmount % 60;
-            int hours = sleepAmount / 60;
-            rec = "For a total of " + hours + " hour(s) and " + minutes + " minute(s).";
-            tvSleep.setText(rec);
+        ViewGroup.LayoutParams startParams = tvStart.getLayoutParams();
+        ViewGroup.LayoutParams sleepParams = tvSleep.getLayoutParams();
+        String rec;
+        switch(type){
+            case 0:
+                sleepParams.height += startParams.height;
+                startParams.height = 0;
+                tvStart.setLayoutParams(startParams);
+                tvSleep.setLayoutParams(sleepParams);
+                rec = "You should get " + sleepAmount + " hours of sleep tonight";
+                tvSleep.setText(rec);
+                break;
+            case 1:
+                sleepParams.height -= 206;
+                startParams.height = 206;
+                tvStart.setLayoutParams(startParams);
+                tvSleep.setLayoutParams(sleepParams);
+                rec = "Your recommended bedtime is " + startTime;
+                tvStart.setText(rec);
+                int minutes = sleepAmount % 60;
+                int hours = sleepAmount / 60;
+                rec = "For a total of " + hours + " hour(s) and " + minutes + " minute(s).";
+                tvSleep.setText(rec);
+                break;
+            case 3:
+                String issue = "Looks like you haven't been updating us on your sleep times. Please submit times you've slept recently and try again.";
+                tvTips.setText(issue);
         }
     }
 
-    //Todo: add button to refresh
     public void querySleep(){
         Tips tipCalculator = new Tips();
         User user = new User();
-        user.inputData(getActivity());
-        ArrayList<String> tips = tipCalculator.topTenRecs(user.buildQuery());
-        String intro = "Welcome back, " + user.getUserName();
-        tvIntro.setText(intro);
+        user.inputData(requireContext());
+        if(!user.getRealName().equals("")) {
+            String intro = "Welcome back, " + user.getRealName();
+            tvIntro.setText(intro);
+        }
+        Integer[] query = user.buildQuery();
+        if(user.getAge() == 0 || query.length != 8) {
+            String update = "Please update your information properly calculate your recommended amount of sleep.";
+            if(user.getAge() == 0) update += "\n-Please include your age in your personal information";
+            if(query.length != 8) update += "\n-Please submit your recent sleep times";
+            tvTips.setText(update);
+            return;
+        }
+        ArrayList<String> tips = tipCalculator.topTenRecs(query);
         //TODO call sleep calculation function here
         //TODO call displayResults() with that info
     }
@@ -100,7 +103,7 @@ public class FirstFragment extends Fragment {
         tvStart= view.findViewById(R.id.tv_sleepTime);
         tvSleep = view.findViewById(R.id.tv_sleepAmount);
         tvIntro = view.findViewById(R.id.textview_first);
-        if(checkValidity()) querySleep();//essentially a "returning user" check
+        querySleep();
 
         view.findViewById(R.id.bt_profile).setOnClickListener(new View.OnClickListener() {
             @Override

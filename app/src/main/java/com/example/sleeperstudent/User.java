@@ -19,15 +19,17 @@ public class User
 
     //add more fields down here
     private String userName;
+    private String realName;
     private int age;
     private int weight;//in pounds
     private int height;//in inches
     private int[] wakeups;
     public User(){
-        age = -1;
+        age = 0;
         userName = "";
-        weight = -1;
-        height = -1;
+        realName = "";
+        weight = 0;
+        height = 0;
         wakeups = new int[7];
         for(int i = 0; i < 7; i++){
             wakeups[i] = 1;
@@ -39,6 +41,7 @@ public class User
     {
         this.userName = userName;
     }
+    public void setRealName(String realName) { this.realName = realName; }
     public void setAge(int age)
     {
         this.age = age;
@@ -51,6 +54,10 @@ public class User
     public String getUserName()
     {
         return this.userName;
+    }
+    public String getRealName()
+    {
+        return this.realName;
     }
     public int getAge()
     {
@@ -88,6 +95,7 @@ public class User
             String printWeight = "Weight: " + DATA_SEPERATOR + Integer.toString(weight) + "\n";
             String[] printWakeup = {"Sunday: ", "Monday: ", "Tuesday: ", "Wednesday: ", "Thursday: ",
                     "Friday: ", "Saturday: "};
+            String printReal = "Real: " + DATA_SEPERATOR + realName + "\n";
             for(int i = 0; i < 7; i++){
                 printWakeup[i] = printWakeup[i] + DATA_SEPERATOR + Integer.toString(wakeups[i]) + "\n";
             }
@@ -99,6 +107,7 @@ public class User
             for(int i = 0; i < 7; i++){
                 out.write(printWakeup[i].getBytes());
             }
+            out.write(printReal.getBytes());
 
             out.flush();
         }
@@ -179,6 +188,9 @@ public class User
                     case "Saturday: ":
                         wakeups[6] = Integer.parseInt(parseInput[1]);
                         break;
+                    case "Real: ":
+                        realName = parseInput[1];
+                        break;
                 }
 
             }
@@ -203,6 +215,8 @@ public class User
         if(age > 21) query[3] = 1;
         /*  Get current time/day
         *   Get all sleep periods within the last 72 hours
+        *   If there isn't a single one within the last 72 hours, return an array of a single 0 ([0])
+        *       For now just assume that they never inputted their data, and not that they're insane
         *       just gonna say it's an arraylist of objects for now, sleepPeriods
         *   Sleep Breaks
         *       for all except last period,

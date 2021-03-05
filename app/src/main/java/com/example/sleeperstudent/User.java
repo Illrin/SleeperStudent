@@ -26,8 +26,8 @@ public class User
     private int[] wakeups;
     public User(){
         age = 0;
-        userName = "";
-        realName = "";
+        userName = "User";
+        realName = "Name";
         weight = 0;
         height = 0;
         wakeups = new int[7];

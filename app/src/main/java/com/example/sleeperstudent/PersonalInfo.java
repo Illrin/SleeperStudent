@@ -52,7 +52,7 @@ public class PersonalInfo extends Fragment {
                 int weight = Integer.parseInt(etWeight.getText().toString());
                 int age = Integer.parseInt(etAge.getText().toString());
                 String name = etName.getText().toString();
-
+                if(name.equals("")) name = "Name";
                 user.setHeight(height);
                 user.setWeight(weight);
                 user.setAge(age);

@@ -1,5 +1,6 @@
 package com.example.sleeperstudent;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -44,8 +45,16 @@ public class FirstFragment extends Fragment {
             fullTips.append(i+1).append(". ").append(tips.get(i)).append("\n");
         }
         tvTips.setText(fullTips.toString());
-        String rec = "Your recommended bedtime is " + startTime.get(Calendar.HOUR_OF_DAY)
-                + ":" + startTime.get(Calendar.MINUTE);;
+        String side = "AM";
+        int hour = startTime.get(Calendar.HOUR_OF_DAY);
+        if(hour >= 12){
+            hour -= 12;
+            side = "PM";
+        }
+        if(hour == 0) hour = 12;
+        @SuppressLint("DefaultLocale")
+        String rec = "Your recommended bedtime is " + hour
+                + ":" + String.format("%02d", startTime.get(Calendar.MINUTE)) + side;
         tvStart.setText(rec);
     }
 

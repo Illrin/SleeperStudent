@@ -1,6 +1,12 @@
 package com.example.sleeperstudent;
 
 import android.content.Context;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -10,6 +16,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Calendar;
+import java.util.Date;
 
 public class User
 {
@@ -32,7 +40,7 @@ public class User
         height = 0;
         wakeups = new int[7];
         for(int i = 0; i < 7; i++){
-            wakeups[i] = 1;
+            wakeups[i] = -1;
         }
     }
 
@@ -206,43 +214,111 @@ public class User
     }
 
     /*************************************************************************************
-     *        Function: BuildQuery
-     *  Post Condition: Returns a vector that can be compared to Tip tag vectors
+     *        Function: getLastFiveBedTimes
+     *  Post Condition: Returns an array of at max 5 latest sleep times in ms from the epoch.
+     *                  Calculated by startDate + startHour * 3,600,000 +
+     *                  startMinute * 60000
+     *                  If there are no entries, return null
      ************************************************************************************/
-    public Integer[] buildQuery(){
+    private long[] getLastFiveBedTimes()
+    {
+        return null;
+    }
+
+    /*************************************************************************************
+     *        Function: getLastFiveWakeUpTimes
+     *  Post Condition: Returns an array of at max 5 latest wakeup times in ms from the epoch.
+     *                  See getLastFiveBedTimes for calculation
+     *                  If there are no entries, return null
+     ************************************************************************************/
+    private long[] getLastFiveWakeUpTimes()
+    {
+        return null;
+    }
+
+    /*************************************************************************************
+     *        Function: getLastFiveWakeUpTimes
+     *  Post Condition: Returns an array of at max 5 latest stress amounts, in range 1-10
+     *                  If there are no entries, return null
+     ************************************************************************************/
+    private int[] getLastFiveStressAmounts(){
+        return null;
+    }
+
+    /*************************************************************************************
+     *        Function: getLastFiveSleepAmounts
+     *  Post Condition: Returns an array of at max 5 latest sleep durations, in minutes
+     *                  If there are no entries, return null
+     ************************************************************************************/
+    private int[] getLastFiveSleepAmounts(){
+        return null;
+    }
+
+    /*************************************************************************************
+     *        Function: BuildQuery
+     *       Variables: Context: Application contextual info
+     *  Post Condition: Returns a vector that can be compared to Tip tag vectors
+     *                  If there are no entries, return null
+     ************************************************************************************/
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public Integer[] buildQuery(Context context){
         //stub for now
         Integer[] query = {0,0,0,0,0,0,0,1};
         if(age > 21) query[3] = 1;
-        /*  Get current time/day
-        *   Get all sleep periods within the last 72 hours
-        *   If there isn't a single one within the last 72 hours, return an array of a single 0 ([0])
-        *       For now just assume that they never inputted their data, and not that they're insane
-        *       just gonna say it's an arraylist of objects for now, sleepPeriods
-        *   Sleep Breaks
-        *       for all except last period,
-        *           check if distance between current period end and next period start are < 1 hour apart
-        *               increment query[0] every time
-        *   Screen Time
-        *       for all periods,
-        *           call ScreenExposure's calculateScreenTime from 30min before startTime to startTime
-        *           sum up
-        *           query[1] = sum / 15? maybe like 20 or 30
-        *   Extreme Lack
-        *       sum up total sleep time, divide by 3 for average
-        *       if < default recc sleeping time / 2? 3? 4?, set query[2] to 5
-        *   Long Naps
-        *       for all periods,
-        *           check if sleep amount is > 30 min and < 2 hrs? 3 hrs?
-        *           increment query[4] for each one
-        *   Sleep Schedule
-        *       for all periods except first and last
-        *           skip if nap (see above)
-        *           if diff in sleep amount between neighbors > 1 hour, increment query[5]
-        *   Stress
-        *       get average stress, increment query[6] if > 6
-        *       for all periods, increment query[6] if stress >= 8
-        *
-        * */
+        long[] wakeUpMs = getLastFiveWakeUpTimes();
+        long[] bedTimeMs = getLastFiveBedTimes();
+        int[] stresses = getLastFiveStressAmounts();
+        int[] durations = getLastFiveSleepAmounts();
+
+        if(wakeUpMs == null || bedTimeMs == null || stresses == null || durations == null) return null;
+
+        for(int i = 0; i < wakeUpMs.length; i++){
+            //query[0]: sleep breaks
+            long diff = bedTimeMs[i+1] - wakeUpMs[i];
+            if(diff <= 3600000) query[0]++;
+
+            //query[5]: sleep schedule
+            if((durations[i] >= 30 && durations[i] <= 180) || (durations[i+1] >= 30 && durations[i+1] <= 180)) continue;
+            Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
+            start.setTimeInMillis(bedTimeMs[i]);
+            end.setTimeInMillis(bedTimeMs[i+1]);
+            Period schedule = new Period(bedTimeMs[i], bedTimeMs[i+1], PeriodType.minutes());
+            if(schedule.getMinutes() > 60) query[5]++;
+        }
+
+        int stressSum = 0;
+        int totalSleep = 0;
+        for(int i = 0; i < wakeUpMs.length; i++){
+            //query[1]: screen exposure
+            Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
+            start.setTimeInMillis(bedTimeMs[i]);
+            end.setTimeInMillis(wakeUpMs[i]);
+            if (ScreenExposure.isUsingPhoneHourBefore(start.get(Calendar.HOUR_OF_DAY),
+                    start.get(Calendar.MINUTE), end.get(Calendar.HOUR_OF_DAY),
+                    end.get(Calendar.MINUTE), context)) query[1]++;
+
+            //query[2]: extreme lack
+            totalSleep += durations[i];
+
+            //query[4]: naps
+            if(durations[i] >= 30 && durations[i] <= 180) query[4]++;
+
+            //query[6]: stress
+            stressSum += stresses[i];
+            if(stresses[i] >= 8) query[6]++;
+        }
+        //query[6]
+        if((double)(stressSum) / wakeUpMs.length > 6){
+            query[6]++;
+        }
+
+        //query[2]
+        Period days = new Period(bedTimeMs[0], wakeUpMs[wakeUpMs.length-1], PeriodType.days());
+        Sleep sleep = new Sleep();
+        //update sleep as it's needed idk how yet ask Alan
+        int minutesNeeded = (sleep.hours * 60 + sleep.minutes) * days.getDays();
+        if(totalSleep < minutesNeeded / 2) query[2] = 5;
+
         return query;
     }
 

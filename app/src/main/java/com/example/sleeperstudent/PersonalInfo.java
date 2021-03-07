@@ -58,6 +58,8 @@ public class PersonalInfo extends Fragment {
                 user.setAge(age);
                 user.setRealName(name);
                 user.writeToFile(view.getContext());
+                NavHostFragment.findNavController(PersonalInfo.this)
+                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
             }
         });
 

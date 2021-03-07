@@ -12,8 +12,8 @@ import java.util.List;
 public class Sleep
 {
     private final int CONSTANT_DAYS_NEEDED = 5;
-    private int hours;
-    private int minutes;
+    public int hours;
+    public int minutes;
 
 
     public Sleep()

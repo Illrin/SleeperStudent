@@ -262,7 +262,6 @@ public class User
      ************************************************************************************/
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public Integer[] buildQuery(Context context){
-        //stub for now
         Integer[] query = {0,0,0,0,0,0,0,1};
         if(age > 21) query[3] = 1;
         long[] wakeUpMs = getLastFiveWakeUpTimes();
@@ -274,29 +273,30 @@ public class User
 
         for(int i = 0; i < wakeUpMs.length; i++){
             //query[0]: sleep breaks
-            long diff = bedTimeMs[i+1] - wakeUpMs[i];
-            if(diff <= 3600000) query[0]++;
+            long diff = Math.abs(bedTimeMs[i+1] - wakeUpMs[i]);
+            if(diff <= 3600000*2) query[0]++;
 
             //query[5]: sleep schedule
-            if((durations[i] >= 30 && durations[i] <= 180) || (durations[i+1] >= 30 && durations[i+1] <= 180)) continue;
+            if((durations[i] <= 180) || (durations[i+1] <= 180)) continue;
             Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
             start.setTimeInMillis(bedTimeMs[i]);
             end.setTimeInMillis(bedTimeMs[i+1]);
-            Period schedule = new Period(bedTimeMs[i], bedTimeMs[i+1], PeriodType.minutes());
-            if(schedule.getMinutes() > 60) query[5]++;
+            Period schedule = new Period(bedTimeMs[i], bedTimeMs[i+1]);
+            int slept = schedule.getHours();
+            if((slept > 1 && schedule.getDays() > 0) || (slept > 12 && slept <= 23)) query[5]++;
         }
+
+        //query[1]: screen exposure
+        Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
+        start.setTimeInMillis(bedTimeMs[bedTimeMs.length-1]);
+        end.setTimeInMillis(wakeUpMs[wakeUpMs.length-1]);
+        if (ScreenExposure.isUsingPhoneHourBefore(start.get(Calendar.HOUR_OF_DAY),
+                start.get(Calendar.MINUTE), end.get(Calendar.HOUR_OF_DAY),
+                end.get(Calendar.MINUTE), context)) query[1] = 2;
 
         int stressSum = 0;
         int totalSleep = 0;
         for(int i = 0; i < wakeUpMs.length; i++){
-            //query[1]: screen exposure
-            Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
-            start.setTimeInMillis(bedTimeMs[i]);
-            end.setTimeInMillis(wakeUpMs[i]);
-            if (ScreenExposure.isUsingPhoneHourBefore(start.get(Calendar.HOUR_OF_DAY),
-                    start.get(Calendar.MINUTE), end.get(Calendar.HOUR_OF_DAY),
-                    end.get(Calendar.MINUTE), context)) query[1]++;
-
             //query[2]: extreme lack
             totalSleep += durations[i];
 
@@ -305,12 +305,10 @@ public class User
 
             //query[6]: stress
             stressSum += stresses[i];
-            if(stresses[i] >= 8) query[6]++;
+            if(stresses[i] >= 9) query[6]++;
         }
         //query[6]
-        if((double)(stressSum) / wakeUpMs.length > 6){
-            query[6]++;
-        }
+        if((double)(stressSum) / wakeUpMs.length > 6) query[6]++;
 
         //query[2]
         Period days = new Period(bedTimeMs[0], wakeUpMs[wakeUpMs.length-1], PeriodType.days());

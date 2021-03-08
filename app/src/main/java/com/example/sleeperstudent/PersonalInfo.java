@@ -38,7 +38,7 @@ public class PersonalInfo extends Fragment {
 
         //Initalize user, set saved text
         User user = new User();
-        user.inputData(this.getContext());
+        user.inputData(requireContext());
         etHeight.setText(String.valueOf(user.getHeight()));
         etWeight.setText(String.valueOf(user.getWeight()));
         etAge.setText(String.valueOf(user.getAge()));
@@ -51,6 +51,13 @@ public class PersonalInfo extends Fragment {
                 int height = Integer.parseInt(etHeight.getText().toString());
                 int weight = Integer.parseInt(etWeight.getText().toString());
                 int age = Integer.parseInt(etAge.getText().toString());
+
+                if(age != user.getAge()) {
+                    Sleep sleep = new Sleep(age);
+                    user.setHours(sleep.hours);
+                    user.setMinutes(sleep.minutes);
+                }
+
                 String name = etName.getText().toString();
                 if(name.equals("")) name = "Name";
                 user.setHeight(height);

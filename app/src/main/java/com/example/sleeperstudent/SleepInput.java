@@ -194,6 +194,7 @@ public class SleepInput extends Fragment {
                         if(days >= 0) sleepTime += ((endHour - startHour) * 60)
                                 + (endMinute - startMinute) + (days * 24 * 60);
                     }
+                    /*
                     //setting up DB connection
                     MongoClient client = new MongoClient(new MongoClientURI("mongodb+srv://andretl2:amiKa2mNXQCZcf2I@sleeperstudent.oczuf.mongodb.net/<dbname>?retryWrites=true&w=majority"));
                     MongoDatabase database= client.getDatabase("sleeperstudent");
@@ -251,11 +252,19 @@ public class SleepInput extends Fragment {
 
 
 
-
+                    */
                     //TODO put into database - startDate, endDate, startHour, endHour,
                     //TODO startMinute, endMinute, sleepTime, mood, quality, stress
                 } catch (ParseException e) {
                     e.printStackTrace();
+                }
+                User user = new User();
+                user.inputData(requireContext());
+                if(user.getAge() != 0) {
+                    Sleep sleep = new Sleep(user.getHours(), user.getMinutes());
+                    int consistency = sleep.isConsistent();
+                    if (consistency == 1) NavHostFragment.findNavController(SleepInput.this)
+                            .navigate(R.id.action_sleepInput_to_sleepCalibration);
                 }
             }
         });

@@ -60,6 +60,7 @@ public class Intro extends Fragment {
                             User user = new User();
                             user.inputData(view.getContext());
                             user.setUserName(etUsername.getText().toString());
+                            user.writeToFile(view.getContext());
                             etUsername.setVisibility(View.INVISIBLE);
                             etUsername.setEnabled(false);
                             tvIntro.setText(done);

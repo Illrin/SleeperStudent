@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_sleepInput_to_FirstFragment"
             app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_sleepInput_to_sleepCalibration"
+            app:destination="@id/sleepCalibration" />
     </fragment>
     <fragment
         android:id="@+id/wakeUp"
@@ -60,5 +63,14 @@
         <action
             android:id="@+id/action_intro_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sleepCalibration"
+        android:name="com.example.sleeperstudent.SleepCalibration"
+        android:label="fragment_sleep_calibration"
+        tools:layout="@layout/fragment_sleep_calibration" >
+        <action
+            android:id="@+id/action_sleepCalibration_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
     </fragment>
 </navigation>

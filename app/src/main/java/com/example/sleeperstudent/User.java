@@ -308,9 +308,7 @@ public class User
         Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
         start.setTimeInMillis(bedTimeMs[bedTimeMs.length-1]);
         end.setTimeInMillis(wakeUpMs[wakeUpMs.length-1]);
-        if (ScreenExposure.isUsingPhoneHourBefore(start.get(Calendar.HOUR_OF_DAY),
-                start.get(Calendar.MINUTE), end.get(Calendar.HOUR_OF_DAY),
-                end.get(Calendar.MINUTE), context)) query[1] = 2;
+        if (ScreenExposure.isUsingPhoneHourBefore(start, end, context)) query[1] = 2;
 
         int stressSum = 0;
         int totalSleep = 0;
@@ -331,7 +329,7 @@ public class User
         //query[2]
         Period days = new Period(bedTimeMs[0], wakeUpMs[wakeUpMs.length-1], PeriodType.days());
         //For now, under 4 hours is generally an extreme lack
-        int minutesNeeded = 240 * days.getDays();
+        int minutesNeeded = (hours * 60 + minutes) * days.getDays();
         if(totalSleep < minutesNeeded) query[2] = 5;
 
         return query;

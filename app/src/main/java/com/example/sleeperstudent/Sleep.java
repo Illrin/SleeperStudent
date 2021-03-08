@@ -9,6 +9,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+
+/*
+    Andrew has to implement in this class. Please read the comments on what these function
+    need.
+        1. getLastFiveBedTimes()
+        2. getlastFiveWakeUpTimes()
+
+
+ */
 public class Sleep
 {
     private final int CONSTANT_DAYS_NEEDED = 5;
@@ -49,6 +58,11 @@ public class Sleep
     }
 
 
+    /************************************************************************************
+     *        Function: sugguestTime
+     *  Post Condition: returns a Calendar object that contains the date and time the user
+     *                  should sleep.
+     ************************************************************************************/
     public double sugguestTime(int startHour, int startMin, int endHour, int endMin)
     {
         Calendar startTime = Calendar.getInstance();
@@ -96,7 +110,7 @@ public class Sleep
     /*************************************************************************************
      *        Function: getLastFiveBedTimes()
      *  Post Condition: returns an array of type long containing the times the user WENT
-     *                  TO BED for the last 5 PREVIOUS days.
+     *                  TO BED for the last 5 PREVIOUS days that ARE NOT NAPS.
      *           Note:  It is assumed that each entry is the # of seconds since unix epoch
      *                  time. In other words, the long contains date, and time.
      *
@@ -111,7 +125,7 @@ public class Sleep
     /*************************************************************************************
      *        Function: getlastFiveWakeUpTimes()
      *  Post Condition: returns an array of type long containing the times the user WOKE UP
-     *                  for the 5 PREVIOUS days.
+     *                  for the 5 PREVIOUS days that ARE NOT NAPS.
      *           Note:  It is assumed that each entry is the # of seconds since unix epoch
      *                  time. In other words, the long contains date, and time.
      *
@@ -125,109 +139,136 @@ public class Sleep
 
     private long minutesSlept(long start, long end)
     {
-        return (end - start) * 1000 * 60;
+        return (end - start) / (1000 * 60);
+    }
+
+
+    private boolean checkTimes(long sleepTimes[], long wakeTimes[])
+    {
+
+        ArrayList<Integer> sameDay = new ArrayList<>();
+        ArrayList<Integer> diffDay = new ArrayList<>();
+        ArrayList<Integer> sameWakeUpDays = new ArrayList<>();
+        ArrayList<Integer> diffWakeUpDays = new ArrayList<>();
+
+        long earliest = 0;
+        long latest = 0;
+
+        Calendar sleepStart = Calendar.getInstance();
+        Calendar sleepEnd = Calendar.getInstance();
+
+        sleepStart.set(Calendar.SECOND, 0);
+        sleepStart.set(Calendar.MILLISECOND, 0);
+        sleepEnd.set(Calendar.SECOND, 0);
+        sleepEnd.set(Calendar.MILLISECOND, 0);
+
+        for(int i = 0; i < CONSTANT_DAYS_NEEDED; ++i)
+        {
+            sleepStart.setTimeInMillis(sleepTimes[i]);
+            sleepEnd.setTimeInMillis(wakeTimes[i]);
+
+            if(sleepStart.get(Calendar.DAY_OF_YEAR) != sleepEnd.get(Calendar.DAY_OF_YEAR))
+            {
+                diffWakeUpDays.add( (sleepEnd.get(Calendar.HOUR_OF_DAY) * 60) + sleepEnd.get(Calendar.MINUTE));
+                diffDay.add(((sleepStart.get(Calendar.HOUR_OF_DAY) * 60) + (sleepStart.get(Calendar.MINUTE))));
+            }
+            else
+            {
+                sameWakeUpDays.add( (sleepEnd.get(Calendar.HOUR_OF_DAY) * 60) + sleepEnd.get(Calendar.MINUTE));
+                sameDay.add(((sleepStart.get(Calendar.HOUR_OF_DAY) * 60) + (sleepStart.get(Calendar.MINUTE))));
+            }
+        }
+
+
+
+        if(!sameDay.isEmpty() && !diffDay.isEmpty())
+        {
+            earliest = Collections.min(diffDay);
+            latest = Collections.max(sameDay);
+        }
+        else
+        {
+            if(!sameDay.isEmpty())
+            {
+                earliest = Collections.min(sameDay);
+                latest = Collections.max(sameDay);
+            }
+            else
+            {
+                earliest = Collections.min(diffDay);
+                latest = Collections.max(diffDay);
+            }
+        }
+
+        Calendar temp1 = Calendar.getInstance();
+        Calendar temp2 = Calendar.getInstance();
+
+        temp1.set(Calendar.SECOND, 0);
+        temp1.set(Calendar.MILLISECOND, 0);
+        temp2.set(Calendar.SECOND, 0);
+        temp2.set(Calendar.MILLISECOND, 0);
+
+        temp1.set(Calendar.HOUR_OF_DAY, (int)(earliest / 60) );
+        temp1.set(Calendar.MINUTE, (int)(earliest % 60) );
+
+        temp2.set(Calendar.HOUR_OF_DAY, (int)(latest / 60) );
+        temp2.set(Calendar.MINUTE, (int)(latest % 60) );
+
+        if(!sameDay.isEmpty() && !diffDay.isEmpty())
+            temp2.add(Calendar.DAY_OF_YEAR, 1);
+
+        temp1.add(Calendar.MINUTE, 30);
+        return (temp1.getTimeInMillis() - temp2.getTimeInMillis() >= 0);
     }
 
 
 
 
+    /*************************************************************************************
+     *        Function: isConsistent
+     *  Post Condition: Checks whether or not the user's sleep is consistent or not.
+     *
+     *   RETURN VALUES:
+     *                  -1: System does not have enough info to determine how much sleep
+     *                      user needs. I don't have 5 days of sleep info.
+     *                   0: User deviated too much from the rec'd sleep time...cannot
+     *                      determine if their sleep schedule. Too erratic!
+     *                   1: The user's sleep schedule is consistent, and follows sleep rec'd
+     *                      hours. You can ask if the sleep rec works.
+     *                   2: User's sleep schedule is too random. They might follow the
+     *                      rec'd # of hours, but they sleep at random times.
+     *
+     *           Note:  It is assumed that each entry is the # of seconds since unix epoch
+     *                  time. In other words, the long contains date, and time.
+     ************************************************************************************/
+    public int isConsistent()
+    {
+        long bedTimes[] = getLastFiveBedTimes();
+        long wakeTimes[] = getlastFiveWakeUpTimes();
 
-//    /*************************************************************************************
-//     *        Function: isConsistent
-//     *  Post Condition: Checks whether or not the
-//     *           Note:  It is assumed that each entry is the # of seconds since unix epoch
-//     *                  time. In other words, the long contains date, and time.
-//     *
-//     *  you'll need to do this andrew since this requires database calls
-//     ************************************************************************************/
-//    private int isConsistent()
-//    {
-//        long bedTimes[] = getLastFiveBedTimes();
-//        long wakeTimes[] = getlastFiveWakeUpTimes();
-//
-//        Integer startTimes[] = new Integer[CONSTANT_DAYS_NEEDED];
-//        Integer endTimes[] = new Integer[CONSTANT_DAYS_NEEDED];
-//
-//        if(bedTimes.length < 5 || wakeTimes.length < 5)
-//            return -2;
-//
-//        long minutesSugguested = (hours * 60) + minutes;
-//        long maxVar = minutesSugguested + 30;
-//        long minVar = minutesSugguested - 30;
-//        Calendar calendar = Calendar.getInstance();
-//
-//        for(int i = 0; i < CONSTANT_DAYS_NEEDED; ++i)
-//        {
-//            long sleepTime = minutesSlept(bedTimes[i], wakeTimes[i]);
-//            if(sleepTime > maxVar || sleepTime < minVar)
-//                return -1;
-//
-//            calendar.setTimeInMillis(bedTimes[i]);
-//            startTimes[i] = new Integer(calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE));
-//
-//            calendar.setTimeInMillis(wakeTimes[i]);
-//            endTimes[i] = new Integer(calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE));
-//        }
-//
-//
-//        boolean wrappedAround = false;
-//        boolean nonWrapedVals = false;
-//
-//        ArrayList<Integer> normalTimes = new ArrayList<>();
-//        ArrayList<Integer> weirdTimes = new ArrayList<>();
-//        long earliest = 0;
-//        long latest = 0;
-//
-//        for(int i = 0; i < CONSTANT_DAYS_NEEDED; ++i)
-//        {
-//            if((startTimes[i]/60)/10 == 2 || (startTimes[i]/60)/10 == 1)
-//            {
-//                wrappedAround = true;
-//                normalTimes.add(startTimes[i]);
-//            }
-//            else
-//            {
-//                nonWrapedVals = true;
-//                weirdTimes.add(startTimes[i]);
-//            }
-//        }
-//        if(wrappedAround)
-//            Collections.sort(normalTimes);
-//        if(nonWrapedVals)
-//            Collections.sort(weirdTimes);
-//
-//        if(wrappedAround && nonWrapedVals)
-//        {
-//            earliest= Collections.min(normalTimes);
-//            latest = Collections.max(weirdTimes);
-//        }
-//        else
-//        {
-//            //person is a night owl
-//            if(wrappedAround)
-//            {
-//                earliest = Collections.min(weirdTimes);
-//                latest = Collections.max(weirdTimes);
-//            }
-//            else
-//            {
-//                earliest = Collections.min(normalTimes);
-//                latest = Collections.max(normalTimes);
-//            }
-//        }
-//
-//        Calendar earliestSleep = Calendar.getInstance();
-//        Calendar latestSleep = Calendar.getInstance();
-//
-//        earliestSleep.set(Calendar.SECOND, 0);
-//        earliestSleep.set(Calendar.MILLISECOND, 0);
-//
-//        latestSleep.set(Calendar.SECOND, 0);
-//        latestSleep.set(Calendar.MILLISECOND, 0);
-//
-//        Calendar.set(Calendar.HOUR_OF_DAY, earliest / 60);
-//
-//    }
+        Integer startTimes[] = new Integer[CONSTANT_DAYS_NEEDED];
+        Integer endTimes[] = new Integer[CONSTANT_DAYS_NEEDED];
+
+        if(bedTimes.length < 5 || wakeTimes.length < 5)
+            return -1;
+
+        long minutesSugguested = (hours * 60) + minutes;
+
+        long maxVar = minutesSugguested + 30;
+        long minVar = minutesSugguested - 30;
+
+        for(int i = 0; i < CONSTANT_DAYS_NEEDED; ++i)
+        {
+            long sleepTime = minutesSlept(bedTimes[i], wakeTimes[i]);
+            if(sleepTime > maxVar || sleepTime < minVar)
+                return 0;
+
+        }
+
+        if(checkTimes(bedTimes, wakeTimes))
+            return 1;
+        return 2;
+    }
 
     /*************************************************************************************
      *        Function: recalibrateSleep

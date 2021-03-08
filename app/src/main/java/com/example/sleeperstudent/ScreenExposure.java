@@ -56,16 +56,12 @@ public class ScreenExposure
     /*************************************************************************************
      *        Function: isUsingPhoneHourBefore
      *       Variables: Context: Application contextual info
-     *                  startHour & startMinute: starting time frame
-     *                  endHour   & endMinute: ending time frame
-     *  Post Condition: Retrieves whether or not the user is using the device within
+     *  Post Condition: Returns whether or not the user is using the device within
      *                  the hour before bedtime.
      ************************************************************************************/
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public static boolean isUsingPhoneHourBefore(int startHour, int startMinute, int endHour, int endMinute, Context context) {
-        Calendar bedTime = Calendar.getInstance();
-        Calendar wakeTime = Calendar.getInstance();
-        createCalendars(startHour, startMinute, endHour, endMinute, bedTime, wakeTime);
+    public static boolean isUsingPhoneHourBefore(Calendar bedTime, Calendar wakeTime, Context context) {
+        Calendar checkTime = Calendar.getInstance();
 
         UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         UsageEvents tester = usageStatsManager.queryEvents(bedTime.getTimeInMillis(), wakeTime.getTimeInMillis());
@@ -79,14 +75,14 @@ public class ScreenExposure
             stop = tester.hasNextEvent();
             if (evento.getEventType() == UsageEvents.Event.SCREEN_INTERACTIVE)
             {
+
+                checkTime.setTimeInMillis(evento.getTimeStamp());
                 double timeDiff = ((bedTime.getTimeInMillis() - evento.getTimeStamp()) / 1000.) / 60.;
                 if (timeDiff <= 30.)
                     return true;
             }
         }
         return false;
-
-
     }
 
 

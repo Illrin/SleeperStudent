@@ -33,7 +33,7 @@ public class SleepCalibration extends Fragment {
         user.inputData(requireContext());
 
         //Recalibrate
-        btYes.setOnClickListener(new View.OnClickListener(){
+        btNo.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Sleep sleep = new Sleep(user.getHours(), user.getMinutes());
@@ -46,7 +46,7 @@ public class SleepCalibration extends Fragment {
 
 
         //Move to initial screen
-        view.findViewById(R.id.btNo).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btYes).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(SleepCalibration.this)

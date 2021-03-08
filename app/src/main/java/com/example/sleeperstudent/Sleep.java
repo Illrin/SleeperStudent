@@ -37,6 +37,11 @@ public class Sleep
         this.minutes = minutes;
     }
 
+    public Sleep(int age){
+        this.hours = getMinSleep(age);
+        this.minutes = 0;
+    }
+
 
 
     public String isUserSleepRec(int startHour, int startMin, int endHour, int endMin, int age)
@@ -248,6 +253,8 @@ public class Sleep
 
         Integer startTimes[] = new Integer[CONSTANT_DAYS_NEEDED];
         Integer endTimes[] = new Integer[CONSTANT_DAYS_NEEDED];
+
+        if(bedTimes == null || wakeTimes == null) return -1;
 
         if(bedTimes.length < 5 || wakeTimes.length < 5)
             return -1;

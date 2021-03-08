@@ -71,14 +71,13 @@ public class FirstFragment extends Fragment {
         Integer[] query = user.buildQuery(requireContext());
         ArrayList<String> tips = new ArrayList<String>();
         if(query != null) tips = tipCalculator.topTenRecs(query);
-        Sleep sleep = new Sleep();
-        //Todo: update sleep however needed
+        Sleep sleep = new Sleep(user.getHours(), user.getMinutes());
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         if(day == 7) day = 0;
         int wakeup = user.getWakeup(day);
         int minute = 0;
-        int hour = 8;
+        int hour = 6;
         if(wakeup > 0){
             wakeup = Math.abs(wakeup) - 1;
             minute = wakeup % 60;

@@ -32,6 +32,8 @@ public class User
     private int weight;//in pounds
     private int height;//in inches
     private int[] wakeups;
+    private int hours;
+    private int minutes;
     public User(){
         age = 0;
         userName = "User";
@@ -42,6 +44,8 @@ public class User
         for(int i = 0; i < 7; i++){
             wakeups[i] = -1;
         }
+        hours = 7;
+        minutes = 30;
     }
 
     //Setters
@@ -57,6 +61,8 @@ public class User
     public void setWeight(int weight){ this.weight = weight; }
     public void setHeight(int height){ this.height = height; }
     public void setWakeups(int wakeup, int weekday){ this.wakeups[weekday] = wakeup; }
+    public void setHours(int hours){this.hours = hours;}
+    public void setMinutes(int minutes){this.minutes = minutes;}
 
     //Getters
     public String getUserName()
@@ -74,6 +80,8 @@ public class User
     public int getWeight() { return weight; }
     public int getHeight() { return height; }
     public int getWakeup(int weekday) { return wakeups[weekday]; }//doesn't check for oob
+    public int getHours(){return hours;}
+    public int getMinutes(){return minutes;}
 
 
     /*************************************************************************************
@@ -107,6 +115,8 @@ public class User
             for(int i = 0; i < 7; i++){
                 printWakeup[i] = printWakeup[i] + DATA_SEPERATOR + Integer.toString(wakeups[i]) + "\n";
             }
+            String printHours = "Hours: " + DATA_SEPERATOR + hours + "\n";
+            String printMin = "Minutes: " + DATA_SEPERATOR + minutes + "\n";
 
             out.write(printName.getBytes());
             out.write(printAge.getBytes());
@@ -116,6 +126,8 @@ public class User
                 out.write(printWakeup[i].getBytes());
             }
             out.write(printReal.getBytes());
+            out.write(printHours.getBytes());
+            out.write(printMin.getBytes());
 
             out.flush();
         }
@@ -198,6 +210,12 @@ public class User
                         break;
                     case "Real: ":
                         realName = parseInput[1];
+                        break;
+                    case "Hours: ":
+                        hours = Integer.parseInt(parseInput[1]);
+                        break;
+                    case "Minutes: ":
+                        minutes = Integer.parseInt(parseInput[1]);
                         break;
                 }
 
@@ -312,10 +330,9 @@ public class User
 
         //query[2]
         Period days = new Period(bedTimeMs[0], wakeUpMs[wakeUpMs.length-1], PeriodType.days());
-        Sleep sleep = new Sleep();
-        //update sleep as it's needed idk how yet ask Alan
-        int minutesNeeded = (sleep.hours * 60 + sleep.minutes) * days.getDays();
-        if(totalSleep < minutesNeeded / 2) query[2] = 5;
+        //For now, under 4 hours is generally an extreme lack
+        int minutesNeeded = 240 * days.getDays();
+        if(totalSleep < minutesNeeded) query[2] = 5;
 
         return query;
     }

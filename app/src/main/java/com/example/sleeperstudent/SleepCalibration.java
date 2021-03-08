@@ -25,8 +25,8 @@ public class SleepCalibration extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         //setup widgets
-        btYes = view.findViewById(R.id.btNo);
-        btNo = view.findViewById(R.id.btYes);
+        btYes = view.findViewById(R.id.btYes);
+        btNo = view.findViewById(R.id.btNo);
 
         //Initalize user, set saved text
         User user = new User();
@@ -46,7 +46,7 @@ public class SleepCalibration extends Fragment {
 
 
         //Move to initial screen
-        view.findViewById(R.id.btYes).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btNo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(SleepCalibration.this)

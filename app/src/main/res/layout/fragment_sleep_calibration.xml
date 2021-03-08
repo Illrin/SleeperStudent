@@ -32,16 +32,16 @@
             android:textSize="24sp" />
 
         <Button
-            android:id="@+id/btNo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:text="No" />
-
-        <Button
             android:id="@+id/btYes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
             android:text="Yes" />
+
+        <Button
+            android:id="@+id/btNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No" />
     </LinearLayout>
 </FrameLayout>

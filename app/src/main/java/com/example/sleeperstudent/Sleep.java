@@ -14,14 +14,7 @@ import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
 
-/*
-    Andrew has to implement in this class. Please read the comments on what these function
-    need.
-        1. getLastFiveBedTimes()
-        2. getlastFiveWakeUpTimes()
 
-
- */
 public class Sleep
 {
     private final int CONSTANT_DAYS_NEEDED = 5;
@@ -125,7 +118,7 @@ public class Sleep
      *
      *  you'll need to do this andrew since this requires database calls
      ************************************************************************************/
-    private long[] getLastFiveBedTimes()
+    private List getLastFiveBedTimes()
     {
         ArrayList<Long> startDates=new ArrayList<>();
         Realm realm = Realm.getDefaultInstance();
@@ -141,8 +134,9 @@ public class Sleep
         });
 
         //startDates = arraylist of all longs of startingDate of sleep times
-        return null;
+        return startDates;
     }
+
 
 
     /*************************************************************************************
@@ -154,7 +148,7 @@ public class Sleep
      *
      *  you'll need to do this andrew since this requires database calls
      ************************************************************************************/
-    private long[] getlastFiveWakeUpTimes()
+    private List getlastFiveWakeUpTimes()
     {
         ArrayList<Long> endDates=new ArrayList<>();
         Realm realm = Realm.getDefaultInstance();
@@ -168,11 +162,8 @@ public class Sleep
                 }
             }
         });
-
-        //endDates = arraylist of all the ending date long times of sleep times
-        return null;
+        return endDates;
     }
-
 
     private long minutesSlept(long start, long end)
     {
@@ -259,6 +250,40 @@ public class Sleep
     }
 
 
+    private class sleepTimes
+    {
+        public long sleepTime[];
+        public long wakeTime[];
+        int counter;
+
+        public sleepTimes()
+        {
+            counter = 4;
+            sleepTime = new long[5];
+            wakeTime = new long[5];
+        }
+
+    }
+
+    private boolean isNap(long bedTime, long wakeTime) { return ((wakeTime - bedTime)/ (60 * 1000)) < 180; }
+
+    private sleepTimes getLastFiveDays(List<Long> bedTimes, List<Long> wakeTimes)
+    {
+        sleepTimes toReturn = new sleepTimes();
+
+        for(int i = bedTimes.size() -1 ; i >= 0; --i )
+        {
+            if(!isNap(bedTimes.get(i), wakeTimes.get(i)))
+            {
+                toReturn.sleepTime[toReturn.counter] = bedTimes.get(i);
+                toReturn.wakeTime[toReturn.counter--] = wakeTimes.get(i);
+                if(toReturn.counter == -1)
+                    return toReturn;
+
+            }
+        }
+        return toReturn;
+    }
 
 
     /*************************************************************************************
@@ -280,13 +305,15 @@ public class Sleep
      ************************************************************************************/
     public int isConsistent()
     {
-        long bedTimes[] = getLastFiveBedTimes();
-        long wakeTimes[] = getlastFiveWakeUpTimes();
+        List tempBed = getLastFiveBedTimes();
+        List tempWake = getlastFiveWakeUpTimes();
 
-        Integer startTimes[] = new Integer[CONSTANT_DAYS_NEEDED];
-        Integer endTimes[] = new Integer[CONSTANT_DAYS_NEEDED];
+        sleepTimes sleepList = getLastFiveDays(tempBed, tempWake);
+        if(sleepList.counter == 4)
+            return -1;
 
-        if(bedTimes == null || wakeTimes == null) return -1;
+        long bedTimes[] = sleepList.sleepTime;
+        long wakeTimes[] = sleepList.wakeTime;
 
         if(bedTimes.length < 5 || wakeTimes.length < 5)
             return -1;

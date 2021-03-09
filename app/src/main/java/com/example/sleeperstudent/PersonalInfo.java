@@ -7,10 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-
+import io.realm.Realm;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.annotations.PrimaryKey;
 
 public class PersonalInfo extends Fragment {
     Button btSave;
@@ -57,6 +62,18 @@ public class PersonalInfo extends Fragment {
                     user.setHours(sleep.hours);
                     user.setMinutes(sleep.minutes);
                 }
+                //db
+                Realm realm = Realm.getDefaultInstance();
+                DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        userentry.setHeight(height);
+                        userentry.setWeight(weight);
+                        userentry.setAge(age);
+                        realm.insertOrUpdate(userentry);
+                    }
+                });
 
                 String name = etName.getText().toString();
                 if(name.equals("")) name = "Name";

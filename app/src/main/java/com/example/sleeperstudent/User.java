@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import io.realm.Realm;
+import io.realm.RealmList;
 
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
@@ -16,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -240,7 +243,29 @@ public class User
      ************************************************************************************/
     private long[] getLastFiveBedTimes()
     {
-        return null;
+        long[] results=new long[5];
+        Realm realm = Realm.getDefaultInstance();
+        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmList<Long> sdates=userentry.getStartDate();
+                int index;
+                if(sdates.size()>=5){
+                    index=5;
+                }
+                else{
+                    index=sdates.size();
+                }
+                for(int i=0;i<sdates.size();i++){
+                    results[i]=sdates.get(sdates.size()-(index-i));
+                }
+            }
+        });
+        if(results[0]==0){
+            return null;
+        }
+        return results;
     }
 
     /*************************************************************************************
@@ -251,7 +276,29 @@ public class User
      ************************************************************************************/
     private long[] getLastFiveWakeUpTimes()
     {
-        return null;
+        long[] results=new long[5];
+        Realm realm = Realm.getDefaultInstance();
+        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmList<Long> sdates=userentry.getEndDate();
+                int index;
+                if(sdates.size()>=5){
+                    index=5;
+                }
+                else{
+                    index=sdates.size();
+                }
+                for(int i=0;i<sdates.size();i++){
+                    results[i]=sdates.get(sdates.size()-(index-i));
+                }
+            }
+        });
+        if(results[0]==0){
+            return null;
+        }
+        return results;
     }
 
     /*************************************************************************************
@@ -260,7 +307,29 @@ public class User
      *                  If there are no entries, return null
      ************************************************************************************/
     private int[] getLastFiveStressAmounts(){
-        return null;
+        int[] results=new int[5];
+        Realm realm = Realm.getDefaultInstance();
+        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmList<Integer> stress=userentry.getStress();
+                int index;
+                if(stress.size()>=5){
+                    index=5;
+                }
+                else{
+                    index=stress.size();
+                }
+                for(int i=0;i<stress.size();i++){
+                    results[i]=stress.get(stress.size()-(index-i));
+                }
+            }
+        });
+        if(results[0]==0){
+            return null;
+        }
+        return results;
     }
 
     /*************************************************************************************
@@ -269,7 +338,81 @@ public class User
      *                  If there are no entries, return null
      ************************************************************************************/
     private int[] getLastFiveSleepAmounts(){
-        return null;
+        int[] results=new int[5];
+        Realm realm = Realm.getDefaultInstance();
+        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmList<Integer> stress=userentry.getSleepTime();
+                int index;
+                if(stress.size()>=5){
+                    index=5;
+                }
+                else{
+                    index=stress.size();
+                }
+                for(int i=0;i<stress.size();i++){
+                    results[i]=stress.get(stress.size()-(index-i));
+                }
+            }
+        });
+        if(results[0]==0){
+            return null;
+        }
+        return results;
+    }
+
+    private int[] getLastFiveMoodAmounts(){
+        int[] results=new int[5];
+        Realm realm = Realm.getDefaultInstance();
+        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmList<Integer> stress=userentry.getMood();
+                int index;
+                if(stress.size()>=5){
+                    index=5;
+                }
+                else{
+                    index=stress.size();
+                }
+                for(int i=0;i<stress.size();i++){
+                    results[i]=stress.get(stress.size()-(index-i));
+                }
+            }
+        });
+        if(results[0]==0){
+            return null;
+        }
+        return results;
+    }
+
+    private int[] getLastFiveQualityAmounts(){
+        int[] results=new int[5];
+        Realm realm = Realm.getDefaultInstance();
+        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmList<Integer> stress=userentry.getQuality();
+                int index;
+                if(stress.size()>=5){
+                    index=5;
+                }
+                else{
+                    index=stress.size();
+                }
+                for(int i=0;i<stress.size();i++){
+                    results[i]=stress.get(stress.size()-(index-i));
+                }
+            }
+        });
+        if(results[0]==0){
+            return null;
+        }
+        return results;
     }
 
     /*************************************************************************************

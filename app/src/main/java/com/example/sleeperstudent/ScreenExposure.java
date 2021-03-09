@@ -9,7 +9,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-
+import io.realm.Realm;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;

@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
-
+import io.realm.Realm;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

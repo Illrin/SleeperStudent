@@ -5,12 +5,17 @@ import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.annotations.PrimaryKey;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,14 +34,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.mongodb.*;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Projections.include;
-import static com.mongodb.client.model.Updates.*;
-import org.bson.Document;
-import org.bson.conversions.Bson;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -179,7 +176,9 @@ public class SleepInput extends Fragment {
                     Date date1 = simpleDateFormat1.parse(sDate);
                     Date date2 = simpleDateFormat1.parse(eDate);
                     long startDate = date1.getTime();
+                    Log.d("start",String.valueOf(startDate));
                     long endDate = date2.getTime();
+                    Log.d("end",String.valueOf(endDate));
                     if (startDate <= endDate) {
                         Period period = new Period(startDate, endDate, PeriodType.days());
                         int days = period.getDays();
@@ -194,65 +193,45 @@ public class SleepInput extends Fragment {
                         if(days >= 0) sleepTime += ((endHour - startHour) * 60)
                                 + (endMinute - startMinute) + (days * 24 * 60);
                     }
-                    /*
-                    //setting up DB connection
-                    MongoClient client = new MongoClient(new MongoClientURI("mongodb+srv://andretl2:amiKa2mNXQCZcf2I@sleeperstudent.oczuf.mongodb.net/<dbname>?retryWrites=true&w=majority"));
-                    MongoDatabase database= client.getDatabase("sleeperstudent");
-                    MongoCollection<Document> data =database.getCollection("data");
-                    //getting the username
-                    User user1=new User();
-                    user1.inputData(view.getContext());
-                    String uid=user1.getUserName();
-                    //creating DB entry
-                    List<Integer> mlist=new ArrayList<>();
-                    List<Integer> qlist=new ArrayList<>();
-                    List<Integer> slist=new ArrayList<>();
-                    List<Date> sdatelist=new ArrayList<>();
-                    List<Date> edatelist=new ArrayList<>();
-                    Document oldDbUser=data.find(eq("_id",uid)).first();
-                    if(oldDbUser==null) {
-                        Document newDbUser = new Document("_id", uid);
-                        newDbUser.append("startdate",sdatelist).append("enddate",edatelist).append("mood",mlist).append("quality",qlist).append("stress",slist);
-                        data.insertOne(newDbUser);
-                    }
-                    oldDbUser=data.find(eq("_id",uid)).first();
-
-
-                    sdatelist=(List<Date>)oldDbUser.get("startdate");
-                    edatelist=(List<Date>)oldDbUser.get("enddate");
-                    mlist=(List<Integer>)oldDbUser.get("mood");
-                    qlist=(List<Integer>)oldDbUser.get("quality");
-                    slist=(List<Integer>)oldDbUser.get("stress");
+                    String namevar="apple";
+                    Realm realm = Realm.getDefaultInstance();
+                    //DbUserInfo userentry= realm.where(DbUserInfo.class).equalTo("name",namevar).findFirst();
+                    //RealmResults<DbUserInfo> userentry=realm.where(DbUserInfo.class).equalTo("name",namevar).findAll();
+                    DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
 
                     int mood = sbMood.getProgress();
+                    //Log.d("MOODS",String.valueOf(mood));
                     int quality = sbQuality.getProgress();
-                    int stress = sbQuality.getProgress();
-                    Bson filter=eq("_id",uid);
-                    Bson updateop;
-                    //update startdate
-                    sdatelist.add(date1);
-                    updateop=set("startdate",sdatelist);
-                    data.updateOne(filter,updateop);
-                    //update enddate
-                    edatelist.add(date2);
-                    updateop=set("enddate",edatelist);
-                    data.updateOne(filter,updateop);
-                    //update mood
-                    mlist.add(mood);
-                    updateop=set("mood",mlist);
-                    data.updateOne(filter,updateop);
-                    //update quality
-                    qlist.add(quality);
-                    updateop=set("quality",qlist);
-                    data.updateOne(filter,updateop);
-                    //update stress
-                    slist.add(stress);
-                    updateop=set("stress",slist);
-                    data.updateOne(filter,updateop);
+                    //Log.d("QUAL",String.valueOf(quality));
+                    int stress = sbStress.getProgress();
+                    long startTime=startDate+startHour*3600000+startMinute*60000;
+                    long endTime=endDate+endHour*3600000+endMinute*60000;
+                    //Log.d("STRESS",String.valueOf(stress));
+                    int finalSleepTime = sleepTime;
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            //Log.d("HEIGHT",String.valueOf(userentry.getHeight()));
+                            //Log.d("moodvalue",String.valueOf(moods.get(0)));
+                            //Log.d("moodbefore",String.valueOf(userentry.getMood().size()));
+                            userentry.getMood().add(mood);
+                            userentry.getStartDate().add(startTime);
+                            userentry.getEndDate().add(endTime);
+                            userentry.getQuality().add(quality);
+                            userentry.getStress().add(stress);
+                            userentry.getSleepTime().add(finalSleepTime);
+
+                            /*RealmList<Long> sdates=userentry.getStartDate();
+                            Log.d("datesize",String.valueOf(sdates.size()));
+                            for(int i=0;i<sdates.size();i++){
+                                Log.d("dates"+String.valueOf(i),String.valueOf(sdates.get(i)));
+                            }*/
+
+                            realm.insertOrUpdate(userentry);
+                        }
+                    });
 
 
-
-                    */
                     //TODO put into database - startDate, endDate, startHour, endHour,
                     //TODO startMinute, endMinute, sleepTime, mood, quality, stress
                 } catch (ParseException e) {

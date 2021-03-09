@@ -5,13 +5,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import io.realm.Realm;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 import java.io.File;
 
@@ -51,7 +56,9 @@ public class Intro extends Fragment {
                         break;
                     case 1:
                         //pull up docs to see if username exists already
-                        if(false){
+                        Realm realm = Realm.getDefaultInstance();
+                        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+                        if(userentry!=null){
                             String retry = "This username is already taken, please use another.";
                             tvIntro.setText(retry);
                         }
@@ -61,6 +68,23 @@ public class Intro extends Fragment {
                             user.inputData(view.getContext());
                             user.setUserName(etUsername.getText().toString());
                             user.writeToFile(view.getContext());
+
+                            realm.executeTransaction(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
+                                    DbUserInfo userentry = realm.createObject(DbUserInfo.class, etUsername.getText().toString());
+                                    realm.insertOrUpdate(userentry);
+                                }
+                            });
+
+                            /*userentry.setStartDate(new RealmList<Long>());
+                            userentry.setEndDate(new RealmList<Long>());
+                            userentry.setSleepTime(new RealmList<Integer>());
+                            userentry.setMood(new RealmList<Integer>());
+                            userentry.setQuality(new RealmList<Integer>());
+                            userentry.setStress(new RealmList<Integer>());*/
+
+                            Log.d("testinfo","creating user");
                             etUsername.setVisibility(View.INVISIBLE);
                             etUsername.setEnabled(false);
                             tvIntro.setText(done);

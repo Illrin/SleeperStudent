@@ -8,7 +8,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.annotations.PrimaryKey;
 
 /*
     Andrew has to implement in this class. Please read the comments on what these function
@@ -123,6 +127,20 @@ public class Sleep
      ************************************************************************************/
     private long[] getLastFiveBedTimes()
     {
+        ArrayList<Long> startDates=new ArrayList<>();
+        Realm realm = Realm.getDefaultInstance();
+        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmList<Long> sdates=userentry.getStartDate();
+                for(int i=0;i<sdates.size();i++){
+                    startDates.add(sdates.get(i));
+                }
+            }
+        });
+
+        //startDates = arraylist of all longs of startingDate of sleep times
         return null;
     }
 
@@ -138,6 +156,20 @@ public class Sleep
      ************************************************************************************/
     private long[] getlastFiveWakeUpTimes()
     {
+        ArrayList<Long> endDates=new ArrayList<>();
+        Realm realm = Realm.getDefaultInstance();
+        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmList<Long> edates=userentry.getEndDate();
+                for(int i=0;i<edates.size();i++){
+                    endDates.add(edates.get(i));
+                }
+            }
+        });
+
+        //endDates = arraylist of all the ending date long times of sleep times
         return null;
     }
 

@@ -9,6 +9,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
+import io.realm.Realm;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
+import io.realm.OrderedRealmCollectionChangeListener;
+import io.realm.OrderedCollectionChangeSet;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder().allowWritesOnUiThread(true).name("default.realm").build();
+        Realm.setDefaultConfiguration(config);
         /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

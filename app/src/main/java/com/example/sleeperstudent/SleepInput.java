@@ -205,7 +205,7 @@ public class SleepInput extends Fragment {
                     //Log.d("QUAL",String.valueOf(quality));
                     int stress = sbStress.getProgress();
                     long startTime=startDate+startHour*3600000+startMinute*60000;
-                    long endTime=endDate+endHour*3600000+endMinute*60000;
+                    long endTime=endDate+endHour*3600000+endMinute*60000 - 86400000;
                     //Log.d("STRESS",String.valueOf(stress));
                     int finalSleepTime = sleepTime;
                     realm.executeTransaction(new Realm.Transaction() {
@@ -245,6 +245,8 @@ public class SleepInput extends Fragment {
                     if (consistency == 1) NavHostFragment.findNavController(SleepInput.this)
                             .navigate(R.id.action_sleepInput_to_sleepCalibration);
                 }
+                NavHostFragment.findNavController(SleepInput.this)
+                        .navigate(R.id.action_sleepInput_to_FirstFragment);
             }
         });
 

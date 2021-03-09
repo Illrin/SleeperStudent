@@ -18,7 +18,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -237,13 +236,11 @@ public class User
     /*************************************************************************************
      *        Function: getLastFiveBedTimes
      *  Post Condition: Returns an array of at max 5 latest sleep times in ms from the epoch.
-     *                  Calculated by startDate + startHour * 3,600,000 +
-     *                  startMinute * 60000
      *                  If there are no entries, return null
      ************************************************************************************/
-    private long[] getLastFiveBedTimes()
+    private long[] getLastTenBedTimes()
     {
-        long[] results=new long[5];
+        long[] results=new long[10];
         Realm realm = Realm.getDefaultInstance();
         DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
         realm.executeTransaction(new Realm.Transaction() {
@@ -251,8 +248,8 @@ public class User
             public void execute(Realm realm) {
                 RealmList<Long> sdates=userentry.getStartDate();
                 int index;
-                if(sdates.size()>=5){
-                    index=5;
+                if(sdates.size()>=10){
+                    index=10;
                 }
                 else{
                     index=sdates.size();
@@ -274,9 +271,9 @@ public class User
      *                  See getLastFiveBedTimes for calculation
      *                  If there are no entries, return null
      ************************************************************************************/
-    private long[] getLastFiveWakeUpTimes()
+    private long[] getLastTenWakeUpTimes()
     {
-        long[] results=new long[5];
+        long[] results=new long[10];
         Realm realm = Realm.getDefaultInstance();
         DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
         realm.executeTransaction(new Realm.Transaction() {
@@ -284,8 +281,8 @@ public class User
             public void execute(Realm realm) {
                 RealmList<Long> sdates=userentry.getEndDate();
                 int index;
-                if(sdates.size()>=5){
-                    index=5;
+                if(sdates.size()>=10){
+                    index=10;
                 }
                 else{
                     index=sdates.size();
@@ -306,8 +303,8 @@ public class User
      *  Post Condition: Returns an array of at max 5 latest stress amounts, in range 1-10
      *                  If there are no entries, return null
      ************************************************************************************/
-    private int[] getLastFiveStressAmounts(){
-        int[] results=new int[5];
+    private int[] getLastTenStressAmounts(){
+        int[] results=new int[10];
         Realm realm = Realm.getDefaultInstance();
         DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
         realm.executeTransaction(new Realm.Transaction() {
@@ -315,8 +312,8 @@ public class User
             public void execute(Realm realm) {
                 RealmList<Integer> stress=userentry.getStress();
                 int index;
-                if(stress.size()>=5){
-                    index=5;
+                if(stress.size()>=10){
+                    index=10;
                 }
                 else{
                     index=stress.size();
@@ -337,8 +334,8 @@ public class User
      *  Post Condition: Returns an array of at max 5 latest sleep durations, in minutes
      *                  If there are no entries, return null
      ************************************************************************************/
-    private int[] getLastFiveSleepAmounts(){
-        int[] results=new int[5];
+    private int[] getLastTenSleepAmounts(){
+        int[] results=new int[10];
         Realm realm = Realm.getDefaultInstance();
         DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
         realm.executeTransaction(new Realm.Transaction() {
@@ -346,60 +343,8 @@ public class User
             public void execute(Realm realm) {
                 RealmList<Integer> stress=userentry.getSleepTime();
                 int index;
-                if(stress.size()>=5){
-                    index=5;
-                }
-                else{
-                    index=stress.size();
-                }
-                for(int i=0;i<stress.size();i++){
-                    results[i]=stress.get(stress.size()-(index-i));
-                }
-            }
-        });
-        if(results[0]==0){
-            return null;
-        }
-        return results;
-    }
-
-    private int[] getLastFiveMoodAmounts(){
-        int[] results=new int[5];
-        Realm realm = Realm.getDefaultInstance();
-        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmList<Integer> stress=userentry.getMood();
-                int index;
-                if(stress.size()>=5){
-                    index=5;
-                }
-                else{
-                    index=stress.size();
-                }
-                for(int i=0;i<stress.size();i++){
-                    results[i]=stress.get(stress.size()-(index-i));
-                }
-            }
-        });
-        if(results[0]==0){
-            return null;
-        }
-        return results;
-    }
-
-    private int[] getLastFiveQualityAmounts(){
-        int[] results=new int[5];
-        Realm realm = Realm.getDefaultInstance();
-        DbUserInfo userentry=realm.where(DbUserInfo.class).findFirst();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmList<Integer> stress=userentry.getQuality();
-                int index;
-                if(stress.size()>=5){
-                    index=5;
+                if(stress.size()>=10){
+                    index=10;
                 }
                 else{
                     index=stress.size();
@@ -424,55 +369,75 @@ public class User
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public Integer[] buildQuery(Context context){
         Integer[] query = {0,0,0,0,0,0,0,1};
-        if(age > 21) query[3] = 1;
-        long[] wakeUpMs = getLastFiveWakeUpTimes();
-        long[] bedTimeMs = getLastFiveBedTimes();
-        int[] stresses = getLastFiveStressAmounts();
-        int[] durations = getLastFiveSleepAmounts();
+        if(age >= 21) query[3] = 2;
+        long[] wakeUpMs = getLastTenWakeUpTimes();
+        long[] bedTimeMs = getLastTenBedTimes();
+        int[] stresses = getLastTenStressAmounts();
+        int[] durations = getLastTenSleepAmounts();
 
         if(wakeUpMs == null || bedTimeMs == null || stresses == null || durations == null) return null;
 
+        int sleepCount = 0;
         for(int i = 0; i < wakeUpMs.length; i++){
-            //query[0]: sleep breaks
-            long diff = Math.abs(bedTimeMs[i+1] - wakeUpMs[i]);
-            if(diff <= 3600000*2) query[0]++;
-
-            //query[5]: sleep schedule
-            if((durations[i] <= 180) || (durations[i+1] <= 180)) continue;
-            Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
-            start.setTimeInMillis(bedTimeMs[i]);
-            end.setTimeInMillis(bedTimeMs[i+1]);
-            Period schedule = new Period(bedTimeMs[i], bedTimeMs[i+1]);
-            int slept = schedule.getHours();
-            if((slept > 1 && schedule.getDays() > 0) || (slept > 12 && slept <= 23)) query[5]++;
+            if(wakeUpMs[i] == 0){
+                sleepCount = i;
+                break;
+            }
         }
 
-        //query[1]: screen exposure
-        Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
-        start.setTimeInMillis(bedTimeMs[bedTimeMs.length-1]);
-        end.setTimeInMillis(wakeUpMs[wakeUpMs.length-1]);
-        if (ScreenExposure.isUsingPhoneHourBefore(start, end, context)) query[1] = 2;
+        for(int i = 1; i < sleepCount; i++){
+            //query[0]: sleep breaks
+
+            Period sleepBreak = new Period(wakeUpMs[i-1],bedTimeMs[i]);
+            if(sleepBreak.getHours() <= 2 && sleepBreak.getDays() == 0) {
+                if(query[0] == 0) query[0]++;
+                query[0]++;
+            }
+
+            //query[5]: sleep schedule
+            if((durations[i-1] <= 90) || (durations[i] <= 90)) continue;
+            Period schedule = new Period(bedTimeMs[i-1], bedTimeMs[i]);
+            int slept = schedule.getHours();
+            if((slept >= 1 && schedule.getDays() > 0) || (slept > 2 && slept <= 22)) {
+                if(query[5] == 0) query[5]++;
+                query[5]++;
+            }
+        }
 
         int stressSum = 0;
         int totalSleep = 0;
-        for(int i = 0; i < wakeUpMs.length; i++){
+        for(int i = 0; i < sleepCount; i++){
+            //query[1]: screen exposure
+            Calendar start = Calendar.getInstance(), end = Calendar.getInstance();
+            start.setTimeInMillis(bedTimeMs[i]);
+            end.setTimeInMillis(wakeUpMs[i]);
+            if (ScreenExposure.isUsingPhoneHourBefore(start, end, context)) {
+                if(query[1] == 0) query[1]++;
+                query[1]++;
+            }
+
             //query[2]: extreme lack
             totalSleep += durations[i];
 
             //query[4]: naps
-            if(durations[i] >= 30 && durations[i] <= 180) query[4]++;
+            if(durations[i] >= 30 && durations[i] <= 90) {
+                if(query[4] == 0) query[4]++;
+                query[4]++;
+            }
 
             //query[6]: stress
             stressSum += stresses[i];
-            if(stresses[i] >= 9) query[6]++;
+            if(stresses[i] >= 8) {
+                if(query[6] == 0) query[6]++;
+                query[6]++;
+            }
         }
         //query[6]
-        if((double)(stressSum) / wakeUpMs.length > 6) query[6]++;
+        if((double)(stressSum) / sleepCount > 6) query[6]++;
 
         //query[2]
-        Period days = new Period(bedTimeMs[0], wakeUpMs[wakeUpMs.length-1], PeriodType.days());
-        //For now, under 4 hours is generally an extreme lack
-        int minutesNeeded = (hours * 60 + minutes) * days.getDays();
+        Period days = new Period(bedTimeMs[0], wakeUpMs[sleepCount-1], PeriodType.days());
+        int minutesNeeded = (hours * 60 + minutes) * days.getDays() / 4;
         if(totalSleep < minutesNeeded) query[2] = 5;
 
         return query;

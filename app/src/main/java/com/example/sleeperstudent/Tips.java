@@ -54,19 +54,13 @@ public class Tips
             graph.add(arr);
 
             arr = new int[TAG_SIZE];
-            allTips.add("Try changing the temperature to b/t 60-67 degrees F");
+            allTips.add("Try changing the temperature to between 60-67 degrees F");
             arr[SLEEP_BREAK] = 1;
             graph.add(arr);
 
             arr = new int[TAG_SIZE];
             allTips.add("Try new sleep positions");
             arr[SLEEP_BREAK] = 1;
-            graph.add(arr);
-
-            arr = new int[TAG_SIZE];
-            allTips.add("Focus on relaxation, clear your mind, do something non simulating, like counting sheep. Avoid looking at the clock!");
-            arr[SLEEP_BREAK] =  1;
-            arr[STRESSED_OUT] = 1;
             graph.add(arr);
 
             arr = new int[TAG_SIZE];
@@ -103,6 +97,12 @@ public class Tips
             arr = new int[TAG_SIZE];
             allTips.add("Try getting out of bed for a few minutes if you wake up in the night. Be sure to keep the lights off!");
             arr[SLEEP_BREAK] = 1;
+            graph.add(arr);
+
+            arr = new int[TAG_SIZE];
+            allTips.add("Focus on relaxation, clear your mind, do something non simulating, like counting sheep. Avoid looking at the clock!");
+            arr[SLEEP_BREAK] =  1;
+            arr[STRESSED_OUT] = 1;
             graph.add(arr);
 
             arr = new int[TAG_SIZE];

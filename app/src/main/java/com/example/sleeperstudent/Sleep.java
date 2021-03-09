@@ -361,6 +361,21 @@ public class Sleep
         return true;
     }
 
+    public void setSleep(int age)
+    {
+        int maxSleep = getMaxSleep(age);
+        int minSleep = getMinSleep(age);
+        int hours = (maxSleep + minSleep)/2;
+        int min = (int)(((((double)maxSleep + minSleep)/2) * 10)%10);
+        if(min == 5)
+            min = 30;
+        int totalMin = (hours * 60) + min;
+        while(totalMin%90 != 0)
+        {
+            totalMin -= 30;
+        }
+
+    }
     private int getMaxSleep(int age)
     {
         if(age <= 2) return 14;

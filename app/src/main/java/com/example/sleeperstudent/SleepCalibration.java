@@ -38,6 +38,8 @@ public class SleepCalibration extends Fragment {
             public void onClick(View view){
                 Sleep sleep = new Sleep(user.getHours(), user.getMinutes());
                 sleep.recalibrateSleep(user.getAge());
+                user.setHours(sleep.hours);
+                user.setMinutes(sleep.minutes);
                 user.writeToFile(view.getContext());
                 NavHostFragment.findNavController(SleepCalibration.this)
                         .navigate(R.id.action_sleepCalibration_to_FirstFragment);

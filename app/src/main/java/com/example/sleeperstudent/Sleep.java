@@ -34,12 +34,6 @@ public class Sleep
         this.minutes = minutes;
     }
 
-    public Sleep(int age){
-        this.hours = getMinSleep(age);
-        this.minutes = 0;
-    }
-
-
 
     public String isUserSleepRec(int startHour, int startMin, int endHour, int endMin, int age)
     {

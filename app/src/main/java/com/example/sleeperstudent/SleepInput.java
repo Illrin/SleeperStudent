@@ -237,16 +237,15 @@ public class SleepInput extends Fragment {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                int navi = R.id.action_sleepInput_to_FirstFragment;
                 User user = new User();
                 user.inputData(requireContext());
                 if(user.getAge() != 0) {
                     Sleep sleep = new Sleep(user.getHours(), user.getMinutes());
                     int consistency = sleep.isConsistent();
-                    if (consistency == 1) NavHostFragment.findNavController(SleepInput.this)
-                            .navigate(R.id.action_sleepInput_to_sleepCalibration);
+                    if (consistency == 1) navi = R.id.action_sleepInput_to_sleepCalibration;
                 }
-                NavHostFragment.findNavController(SleepInput.this)
-                        .navigate(R.id.action_sleepInput_to_FirstFragment);
+                NavHostFragment.findNavController(SleepInput.this).navigate(navi);
             }
         });
 

@@ -58,7 +58,8 @@ public class PersonalInfo extends Fragment {
                 int age = Integer.parseInt(etAge.getText().toString());
 
                 if(age != user.getAge()) {
-                    Sleep sleep = new Sleep(age);
+                    Sleep sleep = new Sleep();
+                    sleep.setSleep(age);
                     user.setHours(sleep.hours);
                     user.setMinutes(sleep.minutes);
                 }

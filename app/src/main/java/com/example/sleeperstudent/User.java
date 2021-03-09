@@ -436,7 +436,8 @@ public class User
         if((double)(stressSum) / sleepCount > 6) query[6]++;
 
         //query[2]
-        Period days = new Period(bedTimeMs[0], wakeUpMs[sleepCount-1], PeriodType.days());
+        Calendar today = Calendar.getInstance();
+        Period days = new Period(bedTimeMs[0], today.getTimeInMillis(), PeriodType.days());
         int minutesNeeded = (hours * 60 + minutes) * days.getDays() / 4;
         if(totalSleep < minutesNeeded) query[2] = 5;
 

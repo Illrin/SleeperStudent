@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".PersonalInfo"
-    android:background="@color/cardview_dark_background">
+    android:background="@color/cardview_dark_background"
+    android:windowSoftInputMode="adjustNothing">
 
     <LinearLayout
         android:layout_width="match_parent"
